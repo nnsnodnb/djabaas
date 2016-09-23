@@ -1,5 +1,5 @@
 apns==2.0.1
 Django==1.9.1
 gunicorn==19.6.0
-six==1.10.0
-user-agent==0.1.5
+ua-parser==0.7.1
+user-agents==1.0.1
