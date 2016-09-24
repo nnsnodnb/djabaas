@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}プッシュ通知送信{% endblock title %}
+{% block content %}
+<header>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <a href="{% url 'push:index' %}" class="navbar-brand">mBaaS Service</a>
+                <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'push:index' %}">登録一覧</a></li>
+                    <li class="active"><a href="#">プッシュ通知送信</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12 well">
+            <form class="form-horizontal" action="{% url 'push:notification_thread' %}" method="post">
+                <fieldset>
+                    <legend>プッシュ通知登録</legend>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="input_os_version" class="col-lg-2 control-label">OSバージョン</label>
+                        <div class="col-lg-10">
+                            <input type="number" id="input_os_version" class="form-control" placeholder="OSバージョン">
+                        </div>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="input_os_version" class="col-lg-2 control-label"></label>
+                        <div class="col-lg-10">
+                            <input type="number" id="input_os_version" class="form-control" placeholder="OSバージョン">
+                        </div>
+                    </div> -->
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button class="btn btn-default" type="reset">キャンセル</button>
+                        <button class="btn btn-primary" type="submit">登録</button>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

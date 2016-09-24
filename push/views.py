@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from push.models import DeviceTokenModel
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
+from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
@@ -12,6 +13,14 @@ def index(request):
     return render_to_response('push/top.html',
                              {'device_tokens': device_tokens},
                              context_instance = RequestContext(request))
+
+def sender(request):
+    c = {}
+    c.update(csrf(request))
+    return render_to_response('push/sender.html', c)
+
+def notification_thread(request):
+    return HttpResponse('notification_thread')
 
 @csrf_exempt
 def device_token_register(request):
@@ -26,5 +35,4 @@ def device_token_register(request):
         response_data['message'] = '"' + receive_json['device_token'] + '" is registered'
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
-        #return HttpResponse('Not allow reuqest')
         return HttpResponseForbidden()
