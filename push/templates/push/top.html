@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}デバイストークン一覧{% endblock title %}
+{% block content %}
+    <table border="1" cellspacing="0">
+        <tr>
+            <th>iOSバージョン</th>
+            <th>デバイストークン</th>
+            <th>登録日時</th>
+            <th>更新日時</th>
+        </tr>
+        {% for device_token in device_tokens %}
+            <tr>
+                <td>{{ device_token.os_version }}</td>
+                <td>{{ device_token.device_token}}</td>
+                <td>{{ device_token.register_datetime }}</td>
+                <td>{{ device_token.update_datetime }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock content %}

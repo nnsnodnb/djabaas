@@ -1,17 +1,22 @@
-from django.shortcuts import render
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
 from push.models import DeviceTokenModel
+from django.shortcuts import render, render_to_response
+from django.template import RequestContext
+from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
 import json
 
 def index(request):
-    return HttpResponse('Hello Django')
+    device_tokens = DeviceTokenModel.objects.all()
+    return render_to_response('push/top.html',
+                             {'device_tokens': device_tokens},
+                             context_instance = RequestContext(request))
+    # return HttpResponse('Hello Django')
 
 @csrf_exempt
 def device_token_register(request):
-    if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
+    if request.method == 'POST' and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
         receive_json = json.loads(request.body)
         insert_data = DeviceTokenModel(os_version = receive_json['os_version'],
                                        device_token = receive_json['device_token'])
