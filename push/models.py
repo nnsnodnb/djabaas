@@ -21,6 +21,8 @@ class NotificationModel(models.Model):
     is_production = models.BooleanField(default = False)
     register_date = models.DateTimeField(default = datetime.now)
 
-class PemfileModel(models.Model):
+class DevelopFileModel(models.Model):
     development_file_name = models.CharField(max_length = 100)
+
+class ProductFileModel(models.Model):
     production_file_name = models.CharField(max_length = 100)

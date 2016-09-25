@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseForbidden
-from push.models import DeviceTokenModel, NotificationModel, PemfileModel
+from push.models import DeviceTokenModel, NotificationModel, DevelopFileModel, ProductFileModel
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
 from django.template.context_processors import csrf
@@ -29,21 +29,34 @@ def notification_list(request):
                              context_instance = RequestContext(request))
 
 def settings(request):
-    if request.method == 'POST':
-        upload_files = []
-        pem_file = PemfileModel()
-        upload_files.append(request.FILES['development'])
-        upload_files.append(request.FILES['production'])
+    if request.method == 'POST' and (request.FILES.has_key('development') or request.FILES.has_key('production')):
+        if request.FILES.has_key('development'):
+            file = request.FILES['development']
+            pem_file = DevelopFileModel(development_file_name = file.name)
+        elif request.FILES.has_key('production'):
+            file = request.FILES['production']
+            pem_file = ProductFileModel(production_file_name = file.name)
 
-        for file in upload_files:
+        if '.pem' not in file.name:
+            redirect('push:settings')
+        else:
             path = os.path.join(UPLOADE_DIR, file.name)
             destination = open(path, 'wb')
             for chunk in file.chunks():
                 destination.write(chunk)
-
-        pem_file.development_file_name = upload_files[0].name
-        pem_file.production_file_name = upload_files[1].name
-        pem_file.save()
+            if isinstance(pem_file, DevelopFileModel):
+                results = DevelopFileModel.objects.all()
+                for item in results:
+                    if os.path.isfile(UPLOADE_DIR + item.development_file_name):
+                        os.remove(UPLOADE_DIR + item.development_file_name)
+                DevelopFileModel.objects.all().delete()
+            elif isinstance(pem_file, ProductFileModel):
+                results = ProductFileModel.objects.all()
+                for item in results:
+                    if os.path.isfile(UPLOADE_DIR + item.production_file_name):
+                        os.remove(UPLOADE_DIR + item.production_file_name)
+                ProductFileModel.objects.all().delete()
+            pem_file.save()
 
         return redirect('push:settings')
     else:
