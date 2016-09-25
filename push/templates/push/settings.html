@@ -27,10 +27,29 @@
 </header>
 <div class="container">
     <div class="row">
-        <div class="col-sm-12">
-            <div class="well">
-
-            </div>
+        <div class="col-sm-12 well">
+            <form class="form-horizontal" method="POST" enctype="multipart/form-data">
+                <fieldset>
+                    <legend>pemファイル</legend>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="input_develop" class="col-lg-2 control-label">Development用</label>
+                        <div class="col-lg-10">
+                            <input type="file" name="development" id="input_develop">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="input_product" class="col-lg-2 control-label">Production用</label>
+                        <div class="col-lg-10">
+                            <input type="file" name="production" id="input_product">
+                        </div>
+                    </div>
+                    <div class="col-lg-10 col-lg-offset-2">
+                        <button class="btn btn-default" type="reset">キャンセル</button>
+                        <button class="btn btn-primary" type="submit">アップロード</button>
+                    </div>
+                </fieldset>
+            </form>
         </div>
     </div>
 </div>
