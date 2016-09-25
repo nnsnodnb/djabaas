@@ -28,7 +28,7 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12 well">
-            <form class="form-horizontal" action="{% url 'push:notification_thread' %}" method="POST"  onSubmit="return verification()">
+            <form class="form-horizontal" action="{% url 'push:notification' %}" method="POST"  onSubmit="return verification()">
                 <fieldset>
                     <legend>プッシュ通知登録</legend>
                     {% csrf_token %}
@@ -47,7 +47,7 @@
                     <div class="form-group">
                         <label for="input_os_version" class="col-lg-2 control-label">OSバージョン</label>
                         <div class="col-lg-10">
-                            <input type="number" id="input_os_version" name="os_version" class="form-control" placeholder="OSバージョン">
+                            <input type="number" id="input_os_version" name="os_version" class="form-control" placeholder="9.0や10.0など(リビジョンは省略)">
                         </div>
                     </div>
                     <div class="form-group">

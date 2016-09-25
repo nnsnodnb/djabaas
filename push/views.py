@@ -6,10 +6,14 @@ from django.template import RequestContext
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 
+from multiprocessing import Process, Lock
 from user_agents import parse
-import json, urllib, ast, sys, os
+import json, urllib, ast, sys, os, threading
 
 UPLOADE_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/modules')
+
+import push_notification
 
 def index(request):
     device_tokens = DeviceTokenModel.objects.all()
@@ -64,7 +68,7 @@ def settings(request):
         c.update(csrf(request))
         return render_to_response('push/settings.html', c)
 
-def notification_thread(request):
+def notification(request):
     if request.method == 'POST':
         arrays = request.body.split('&')
         query = {}
@@ -77,12 +81,20 @@ def notification_thread(request):
                 query[tmp_arrays[0]] = urllib.unquote(tmp_arrays[1])
 
         notification = NotificationModel()
-        notification.title = query['title']
-        notification.message = query['message']
-        notification.os_version = query['os_version']
-        notification.sound = query['sound']
-        notification.badge = query['badge']
-        notification.url = query['url']
+        if query['title'] != '':
+            notification.title = query['title']
+        if query['message'] != '':
+            notification.message = query['message']
+        if query['os_version'] != '':
+            notification.os_version = query['os_version']
+        if query['sound'] != '':
+            notification.sound = query['sound']
+        if query['badge'] != '':
+            notification.badge = query['badge']
+        elif query['badge'] == '':
+            notification.badge = 0
+        if query['url'] != '':
+            notification.url = query['url']
         if query.has_key('json'):
             notification.json = json.dumps(query['json'])
         if query.has_key('content-available'):
@@ -91,6 +103,10 @@ def notification_thread(request):
             notification.is_production = True
 
         notification.save()
+
+        # lock = Lock()
+        # Process(target = prepare_push_notification, args = (lock, request, notification)).start()
+        prepare_push_notification(notification)
 
         return HttpResponse(query)
     else:
@@ -110,3 +126,15 @@ def device_token_register(request):
         return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         return HttpResponseForbidden()
+
+def prepare_push_notification(notification):
+    # lock.acquire()
+    device_token_lists = []
+    device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
+    for item in device_tokens:
+        print('===============')
+        print(item)
+        print('===============')
+        device_token_lists.append(item.device_token)
+    push_notification.execute_push_service(device_token_lists, notification)
+    # lock.release()
