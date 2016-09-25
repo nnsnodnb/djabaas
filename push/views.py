@@ -20,7 +20,10 @@ def sender(request):
     return render_to_response('push/sender.html', c)
 
 def notification_thread(request):
-    return HttpResponse('notification_thread')
+    if request.method == 'POST':
+        return HttpResponse(request.body)
+    else:
+        return HttpResponseForbidden()
 
 @csrf_exempt
 def device_token_register(request):
