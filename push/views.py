@@ -6,7 +6,6 @@ from django.template import RequestContext
 from django.template.context_processors import csrf
 from django.views.decorators.csrf import csrf_exempt
 
-from multiprocessing import Process, Lock
 from user_agents import parse
 import json, urllib, ast, sys, os, threading
 
@@ -96,17 +95,18 @@ def notification(request):
         if query['url'] != '':
             notification.url = query['url']
         if query.has_key('json'):
-            notification.json = json.dumps(query['json'])
+            notification.json = json.dumps(query['json']).replace('\'', '\"')
         if query.has_key('content-available'):
             notification.content_available = True
         if query.has_key('is_production'):
             notification.is_production = True
 
         notification.save()
+        device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
 
-        # lock = Lock()
-        # Process(target = prepare_push_notification, args = (lock, request, notification)).start()
-        prepare_push_notification(notification)
+        t = threading.Thread(target = prepare_push_notification, args = (request, notification, device_tokens))
+        t.start();
+        # prepare_push_notification(notification)
 
         return HttpResponse(query)
     else:
@@ -127,14 +127,9 @@ def device_token_register(request):
     else:
         return HttpResponseForbidden()
 
-def prepare_push_notification(notification):
-    # lock.acquire()
+def prepare_push_notification(request, notification, device_tokens):
     device_token_lists = []
-    device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
     for item in device_tokens:
-        print('===============')
-        print(item)
-        print('===============')
         device_token_lists.append(item.device_token)
-    push_notification.execute_push_service(device_token_lists, notification)
-    # lock.release()
+
+    push_notification.execute(device_token_lists, notification)
