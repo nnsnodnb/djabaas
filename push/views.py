@@ -41,7 +41,7 @@ def settings(request):
             pem_file = ProductFileModel(production_file_name = file.name)
 
         if '.pem' not in file.name:
-            redirect('push:settings')
+            return redirect('push:settings')
         else:
             path = os.path.join(UPLOADE_DIR, file.name)
             destination = open(path, 'wb')
@@ -104,11 +104,10 @@ def notification(request):
         notification.save()
         device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
 
-        t = threading.Thread(target = prepare_push_notification, args = (request, notification, device_tokens))
+        t = threading.Thread(target = prepare_push_notification, args = (notification, device_tokens))
         t.start();
-        # prepare_push_notification(notification)
 
-        return HttpResponse(query)
+        return redirect('push:notification_list')
     else:
         return HttpResponseForbidden()
 
@@ -127,7 +126,7 @@ def device_token_register(request):
     else:
         return HttpResponseForbidden()
 
-def prepare_push_notification(request, notification, device_tokens):
+def prepare_push_notification(notification, device_tokens):
     device_token_lists = []
     for item in device_tokens:
         device_token_lists.append(item.device_token)

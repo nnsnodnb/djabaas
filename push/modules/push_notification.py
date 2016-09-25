@@ -17,10 +17,14 @@ def execute(device_token_lists, notification):
     for token in device_token_lists:
         token_hex.append(token)
 
+    json_data = ''
+    if notification.json != '':
+        json_data = json.loads(notification.json)
+
     payload = Payload(alert = notification.message.decode('utf-8'),
                       sound = notification.sound,
                       badge = notification.badge,
-                      custom = json.loads(notification.json))
+                      custom = json_data)
 
     frame = Frame()
     identifier = 1
