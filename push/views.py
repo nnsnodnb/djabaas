@@ -19,6 +19,12 @@ def sender(request):
     c.update(csrf(request))
     return render_to_response('push/sender.html', c)
 
+def notification_list(request):
+    notifications = NotificationModel.objects.all()
+    return render_to_response('push/notification_list.html',
+                             {'notifications': notifications},
+                             context_instance = RequestContext(request))
+
 def notification_thread(request):
     if request.method == 'POST':
         arrays = request.body.split('&')

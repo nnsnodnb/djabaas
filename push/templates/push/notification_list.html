@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}デバイストークン一覧{% endblock title %}
+{% block title %}プッシュ通知送信履歴{% endblock title %}
 {% block content %}
 <header>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -14,9 +14,9 @@
             </div>
             <div class="navbar-collapse collapse" id="navbar-main">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">登録一覧</a></li>
+                    <li><a href="{% url 'push:index' %}">登録一覧</a></li>
                     <li><a href="{% url 'push:sender' %}">プッシュ通知登録</a></li>
-                    <li><a href="{% url 'push:notification_list' %}">プッシュ通知送信履歴</a></a></li>
+                    <li class="active"><a href="#">プッシュ通知送信履歴</a></li>
                 </ul>
             </div>
         </div>
@@ -31,15 +31,16 @@
                         <th>タイトル</th>
                         <th>メッセージ</th>
                         <th>OSバージョン</th>
+                        <th>JSON</th>
+                        <th>登録日時</th>
                     </tr>
-                    {% for notification in notifications %}
+                    {% for notifications in notifications %}
                         <tr>
-                            <td>{{ notification.title }}</td>
-                            <td>{{ notification.message }}</td>
-                            <td>{{ notification.os_version }}</td>
-                            <!--<td>{{ device_token.device_token}}</td>
-                            <td>{{ device_token.register_datetime }}</td>
-                            <td>{{ device_token.update_datetime }}</td>-->
+                            <td>{{ notifications.title }}</td>
+                            <td>{{ notifications.message}}</td>
+                            <td>{{ notifications.os_version }}</td>
+                            <td>{{ notification.json }}</td>
+                            <td>{{ notifications.register_date }}</td>
                         </tr>
                     {% endfor %}
                 </table>
