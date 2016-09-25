@@ -40,7 +40,7 @@ def notification_thread(request):
         notification.url = query['url']
         if query.has_key('json'):
             notification.json = json.dumps(query['json'])
-        if query.has_key('content_available'):
+        if query.has_key('content-available'):
             notification.content_available = True
         if query.has_key('is_production'):
             notification.is_production = True
