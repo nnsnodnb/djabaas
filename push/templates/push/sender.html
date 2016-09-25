@@ -59,14 +59,21 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="input_url" class="col-lg-2 control-label">URL</label>
+                        <div class="col-lg-10">
+                            <input type="text" id="input_url" name="url" class="form-control" placeholder="https://example.com">
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label for="input_json" class="col-lg-2 control-label">JSON</label>
                         <div class="col-lg-10" id="json_check">
-                            <textarea class="form-control" rows="5" id="input_json" onChange="shaping_json(this)" placeholder="{'url': 'https://example.com'}"></textarea>
+                            <textarea class="form-control" rows="5" id="input_json" onChange="shaping_json(this)" placeholder="{'image': 'sample.jpg'}"></textarea>
                         </div>
                         <div class="checkbox col-lg-10 col-lg-offset-2">
                             <label><input type="checkbox" name="content-availabel" value="true">content-available</label>
                         </div>
                     </div>
+                    <input type="hidden" id="send_json" value="">
                     <div class="form-group">
                         <label for="input_os_version" class="col-lg-2 control-label">配信方法</label>
                         <div class="col-lg-10">
