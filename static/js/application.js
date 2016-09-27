@@ -37,3 +37,11 @@ function verification() {
         }
     }
 }
+
+$("#show_password").change(function() {
+    if ($('#input_password').attr('type') == 'password') {
+        $('#input_password').attr('type', 'text');
+    } else {
+        $('#input_password').attr('type', 'password');
+    }
+});

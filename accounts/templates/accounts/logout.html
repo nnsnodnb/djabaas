@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}ログアウト{% endblock title %}
+
+{% block content %}
+
+<h3 class="page-header">ログアウトしました</h3>
+
+<script type="text/javascript">
+    document.getElementsByClassName('breadcrumbs')[0].getElementsByTagName('a')[0].href = "/";
+</script>
+{% endblock content %}

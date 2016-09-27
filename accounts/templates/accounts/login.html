@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}ログイン{% endblock title %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            {% if form.errors %}
+                <div class="alert alert-dismissible alert-danger">
+                    <h4><strong>ログインエラー</strong></h4>
+                    <p>ユーザ名かパスワードが間違っています。</p>
+                </div>
+            {% endif %}
+
+            {% if form.errors %}
+            <div class="panel panel-danger">
+            {% else %}
+            <div class="panel panel-success">
+            {% endif %}
+                <div class="panel-heading">
+                    <h3 class="panel-title text-center">ログイン</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" action"/accounts/login" method="POST">
+                        <fieldset>
+                            <legend>ログイン</legend>
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="input_username" class="col-lg-3 control-label">ユーザ名</label>
+                                <div class="col-lg-9">
+                                    <input class="form-control" type="text" id="input_username" name="username" placeholder="Username" aria-describedby="sizing-addon1" autofocus required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="input_password" class="col-lg-3 control-label">パスワード</label>
+                                <div class="col-lg-9">
+                                    <input class="form-control" type="password" id="input_password" name="password" placeholder="Pasword" aria-describedby="sizing-addon1" required>
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" id="show_password">パスワードを表示</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-9 col-lg-offset-3">
+                                    <button type="reset" class="btn btn-default">リセット</button>
+                                    <input type="submit" class="btn btn-primary" value="ログイン">
+                                    <input name="next" type="hidden" value="{{ next }}"/>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
