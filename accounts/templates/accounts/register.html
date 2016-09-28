@@ -1,24 +1,13 @@
 {% extends "base.html" %}
-{% block title %}ログイン{% endblock title %}
+{% block title %}新規登録{% endblock title %}
 {% block content %}
 
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            {% if form.errors %}
-                <div class="alert alert-dismissible alert-danger">
-                    <h4><strong>ログインエラー</strong></h4>
-                    <p>ユーザ名かパスワードが間違っています。</p>
-                </div>
-            {% endif %}
-
-            {% if form.errors %}
-            <div class="panel panel-danger">
-            {% else %}
-            <div class="panel panel-success">
-            {% endif %}
+            <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title text-center">ログイン</h3>
+                    <h3 class="panel-title text-center">新規登録</h3>
                 </div>
                 <div class="panel-body">
                     <form class="form-horizontal" action"/accounts/login" method="POST">
