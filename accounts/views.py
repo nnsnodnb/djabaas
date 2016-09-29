@@ -39,22 +39,30 @@ def register(request):
 
 def forget(request):
     if request.method == 'POST':
-        if request.POST.has_key('username'):
+        if request.POST['username'] != '':
             user = User.objects.get(username = request.POST['username'])
+            prepare_mail(user)
+        elif request.POST['email'] != '':
+            user = User.objects.get(email = request.POST['email'])
+            prepare_mail(user)
+        else:
+            return redirect('accounts:forget')
 
-            password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
-            user.set_password(password)
-            user.save()
-            send_mail(u'パスワード再発行', user.username + u"""様\n\n
-パスワードを再発行いたしました。
-ログイン後はすぐにパスワードを変更してください。\n\n
-パスワード：""" + password, user.email)
         return HttpResponse('ご登録のメールアドレスに仮パスワードを送信しました')
     else:
         print('GET')
         c = {}
         c.update(csrf(request))
         return render_to_response('accounts/forget.html', c)
+
+def prepare_mail(user):
+    password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
+    user.set_password(password)
+    user.save()
+    send_mail(u'パスワード再発行', user.username + u"""様\n\n
+パスワードを再発行いたしました。
+ログイン後はすぐにパスワードを変更してください。\n\n
+パスワード：""" + password, user.email)
 
 def send_mail(title, body, to):
     try:
