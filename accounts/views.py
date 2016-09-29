@@ -1,3 +1,4 @@
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
@@ -7,18 +8,20 @@ import urllib
 
 def register(request):
     if request.method == 'POST':
-        arrays = request.body.split('&')
-        query = {}
-        for item in arrays:
-            tmp_arrays = item.split('=')
-            query[tmp_arrays[0]] = tmp_arrays[1]
-
-        if query['password'] == query['password_confirm']:
-            user = User(username = query['username'],
-                        email = urllib.unquote(query['email']),
-                        password = query['password'])
+        if request.POST['password'] == request.POST['password_confirm']:
+            user = User.objects.create_user(request.POST['username'],
+                                            urllib.unquote(request.POST['email']),
+                                            request.POST['password'])
             user.save()
-            return render_to_response('/accounts/login/next=/')
+            login_user = authenticate(username = request.POST['username'], password = request.POST['password'])
+            if login_user is not None:
+                if login_user.is_active:
+                    login(request, login_user)
+                    return redirect('push:index')
+                else:
+                    return HttpResponse('Login Error')
+            else:
+                return HttpResponse('Login Error')
         else:
             c = {}
             c.update(csrf(request))
