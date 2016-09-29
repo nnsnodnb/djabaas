@@ -12,16 +12,20 @@ def register(request):
             user = User.objects.create_user(request.POST['username'],
                                             urllib.unquote(request.POST['email']),
                                             request.POST['password'])
-            user.save()
-            login_user = authenticate(username = request.POST['username'], password = request.POST['password'])
-            if login_user is not None:
-                if login_user.is_active:
-                    login(request, login_user)
-                    return redirect('push:index')
+            try:
+                user.save()
+                login_user = authenticate(username = request.POST['username'],
+                                          password = request.POST['password'])
+                if login_user is not None:
+                    if login_user.is_active:
+                        login(request, login_user)
+                        return redirect('push:index')
+                    else:
+                        return HttpResponse('Login Error')
                 else:
                     return HttpResponse('Login Error')
-            else:
-                return HttpResponse('Login Error')
+            except Exception as e:
+                raise
         else:
             c = {}
             c.update(csrf(request))
