@@ -77,36 +77,26 @@ def settings(request):
 @login_required(login_url = '/accounts/login/')
 def notification(request):
     if request.method == 'POST':
-        arrays = request.body.split('&')
-        query = {}
-        for item in arrays:
-            tmp_arrays = item.split('=')
-            if 'json' in tmp_arrays[0]:
-                json_text = urllib.unquote(tmp_arrays[1])
-                query[tmp_arrays[0]] = ast.literal_eval(json_text)
-            else:
-                query[tmp_arrays[0]] = urllib.unquote(tmp_arrays[1])
-
         notification = NotificationModel()
-        if query['title'] != '':
-            notification.title = query['title']
-        if query['message'] != '':
-            notification.message = query['message']
-        if query['os_version'] != '':
-            notification.os_version = query['os_version']
-        if query['sound'] != '':
-            notification.sound = query['sound']
-        if query['badge'] != '':
-            notification.badge = query['badge']
-        elif query['badge'] == '':
+        if request.POST['title'] != '':
+            notification.title = urllib.unquote(request.POST['title'])
+        if request.POST['message'] != '':
+            notification.message = urllib.unquote(request.POST['message'])
+        if request.POST['os_version'] != '':
+            notification.os_version = urllib.unquote(request.POST['os_version'])
+        if request.POST['sound'] != '':
+            notification.sound = request.POST['sound']
+        if request.POST['badge'] != '':
+            notification.badge = request.POST['badge']
+        elif request.POST['badge'] == '':
             notification.badge = 0
-        if query['url'] != '':
-            notification.url = query['url']
-        if query.has_key('json'):
-            notification.json = json.dumps(query['json']).replace('\'', '\"')
-        if query.has_key('content-available'):
+        if request.POST['url'] != '':
+            notification.url = urllib.unquote(request.POST['url'])
+        if request.POST.has_key('json'):
+            notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
+        if request.POST.has_key('content-available'):
             notification.content_available = True
-        if query.has_key('is_production'):
+        if request.POST.has_key('is_production'):
             notification.is_production = True
 
         notification.save()
