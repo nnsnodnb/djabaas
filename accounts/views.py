@@ -1,7 +1,6 @@
 # coding=utf-8
 
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
@@ -55,23 +54,6 @@ def forget(request):
         c = {}
         c.update(csrf(request))
         return render_to_response('accounts/forget.html', c)
-
-@login_required(login_url = '/accounts/login/')
-def change_pass(request):
-    if request.method == 'POST':
-        old_password = request.POST['old_password']
-        new_password = request.POST['new_password']
-        new_confirm = request.POST['new_confirm']
-        user = User.objects.get(username = request.user.username)
-        if user.password == old_password and new_password == new_confirm:
-            print(user.password)
-            user.set_password(new_password)
-            user.save()
-            return redirect('push:index')
-        else:
-            return redirect('push:settings')
-    else:
-        return redirect('push:settings')
 
 def prepare_mail(user):
     password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
