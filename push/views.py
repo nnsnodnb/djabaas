@@ -121,6 +121,11 @@ def notification(request):
     else:
         return HttpResponseForbidden()
 
+@login_required(login_url = '/accounts/login/')
+def delete_device_token(request, device_token_id):
+    DeviceTokenModel.objects.filter(id = device_token_id).delete()
+    return redirect('push:index')
+
 @csrf_exempt
 def device_token_register(request):
     if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
