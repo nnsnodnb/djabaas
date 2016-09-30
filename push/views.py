@@ -9,10 +9,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
-import json, urllib, ast, sys, os, threading
+import json, urllib, ast, sys, os, threading, os.path
 
-
-UPLOADE_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
+UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/modules')
 
 import push_notification
@@ -28,7 +27,14 @@ def index(request):
 def sender(request):
     c = {}
     c.update(csrf(request))
-    return render_to_response('push/sender.html', c)
+    if len(DevelopFileModel.objects.filter(upload_username = request.user.username)) > 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+        return render_to_response('push/sender_develop.html', c)
+    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) > 0:
+        return render_to_response('push/sender_product.html', c)
+    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+        return render_to_response('push/sender_none.html', c)
+    else:
+        return render_to_response('push/sender.html', c)
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
@@ -42,29 +48,35 @@ def settings(request):
     if request.method == 'POST' and (request.FILES.has_key('development') or request.FILES.has_key('production')):
         if request.FILES.has_key('development'):
             file = request.FILES['development']
-            pem_file = DevelopFileModel(development_file_name = file.name)
+            pem_file = DevelopFileModel(upload_username = request.user.username,
+                                        development_file_name = str(request.user.username) + '/' + file.name)
         elif request.FILES.has_key('production'):
             file = request.FILES['production']
-            pem_file = ProductFileModel(production_file_name = file.name)
+            pem_file = ProductFileModel(upload_username = request.user.username,
+                                        production_file_name = str(request.user.username) + '/' + file.name)
 
         if '.pem' not in file.name:
             return redirect('push:settings')
         else:
-            path = os.path.join(UPLOADE_DIR, file.name)
+            USER_UPLOAD_DIR = UPLOAD_DIR + str(request.user.username) + '/'
+            if os.path.isdir(USER_UPLOAD_DIR) == False:
+                os.mkdir(USER_UPLOAD_DIR)
+            path = os.path.join(USER_UPLOAD_DIR, file.name)
             destination = open(path, 'wb')
             for chunk in file.chunks():
                 destination.write(chunk)
+
             if isinstance(pem_file, DevelopFileModel):
                 results = DevelopFileModel.objects.all()
                 for item in results:
-                    if os.path.isfile(UPLOADE_DIR + item.development_file_name):
-                        os.remove(UPLOADE_DIR + item.development_file_name)
+                    if os.path.isfile(USER_UPLOAD_DIR + item.development_file_name):
+                        os.remove(USER_UPLOAD_DIR + item.development_file_name)
                 DevelopFileModel.objects.all().delete()
             elif isinstance(pem_file, ProductFileModel):
                 results = ProductFileModel.objects.all()
                 for item in results:
-                    if os.path.isfile(UPLOADE_DIR + item.production_file_name):
-                        os.remove(UPLOADE_DIR + item.production_file_name)
+                    if os.path.isfile(USER_UPLOAD_DIR + item.production_file_name):
+                        os.remove(USER_UPLOAD_DIR + item.production_file_name)
                 ProductFileModel.objects.all().delete()
             pem_file.save()
 
