@@ -27,7 +27,7 @@ def register(request):
                 else:
                     return HttpResponse('Login Error')
             except Exception as e:
-                raise
+                return HttpResponse(e)
         else:
             c = {}
             c.update(csrf(request))
@@ -69,4 +69,4 @@ def send_mail(title, body, to):
         EmailMessage(title, body, to = [to]).send()
         return HttpResponse('Send your register email')
     except Exception as e:
-        raise
+        return HttpResponse(e)
