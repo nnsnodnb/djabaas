@@ -22,7 +22,9 @@ class NotificationModel(models.Model):
     register_date = models.DateTimeField(default = datetime.now)
 
 class DevelopFileModel(models.Model):
+    upload_username = models.CharField(max_length = 50)
     development_file_name = models.CharField(max_length = 100)
 
 class ProductFileModel(models.Model):
+    upload_username = models.CharField(max_length = 50)
     production_file_name = models.CharField(max_length = 100)
