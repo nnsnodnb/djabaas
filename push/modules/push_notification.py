@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import time, os, json
 from apns import APNs, Frame, Payload
 from push.models import DevelopFileModel, ProductFileModel

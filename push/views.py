@@ -124,15 +124,29 @@ def notification(request):
 @csrf_exempt
 def device_token_register(request):
     if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
-        receive_json = json.loads(request.body)
-        insert_data = DeviceTokenModel(os_version = receive_json['os_version'],
-                                       device_token = receive_json['device_token'])
-        insert_data.save()
-
         response_data = {}
-        response_data['result'] = 'success'
-        response_data['message'] = '"' + receive_json['device_token'] + '" is registered'
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+
+        receive_json = json.loads(request.body)
+        if len(DeviceTokenModel.objects.filter(device_token = receive_json['device_token'])) == 0:
+            try:
+                float_os_version = float(receive_json['os_version'])
+            except Exception as e:
+                os_version_arrays = receive_json['os_version'].split('.')
+                tmp_string = os_version_arrays[0] + '.' + os_version_arrays[1]
+                float_os_version = float(tmp_string)
+
+            insert_data = DeviceTokenModel(os_version = float_os_version,
+                                           device_token = receive_json['device_token'])
+            insert_data.save()
+
+            response_data['result'] = 'success'
+            response_data['message'] = '"' + receive_json['device_token'] + '" is registered'
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
+        else:
+            response_data['result'] = 'success'
+            response_data['message'] = '"' + receive_json['device_token'] + '" was registered'
+
+            return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         return HttpResponseForbidden()
 
