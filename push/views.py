@@ -18,7 +18,7 @@ import push_notification
 
 @login_required(login_url = '/accounts/login/')
 def index(request):
-    device_tokens = DeviceTokenModel.objects.all()
+    device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
     return render_to_response('push/top.html',
                              {'device_tokens': device_tokens},
                              context_instance = RequestContext(request))
@@ -127,12 +127,13 @@ def delete_device_token(request, device_token_id):
     return redirect('push:index')
 
 @csrf_exempt
-def device_token_register(request):
+def device_token_register(request, username):
     if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
         response_data = {}
 
         receive_json = json.loads(request.body)
-        if len(DeviceTokenModel.objects.filter(device_token = receive_json['device_token'])) == 0:
+        if len(DeviceTokenModel.objects.filter(device_token = receive_json['device_token'],
+                                               username = username)) == 0:
             try:
                 float_os_version = float(receive_json['os_version'])
             except Exception as e:
@@ -141,7 +142,8 @@ def device_token_register(request):
                 float_os_version = float(tmp_string)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
-                                           device_token = receive_json['device_token'])
+                                           device_token = receive_json['device_token'],
+                                           username = username)
             insert_data.save()
 
             response_data['result'] = 'success'
