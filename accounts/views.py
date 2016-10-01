@@ -11,9 +11,10 @@ import urllib, random, string
 def register(request):
     if request.method == 'POST':
         if request.POST['password'] == request.POST['password_confirm']:
-            user = User.objects.create_user(request.POST['username'],
-                                            urllib.unquote(request.POST['email']),
-                                            request.POST['password'])
+            user = User.objects.create_user(username = request.POST['username'],
+                                            email = urllib.unquote(request.POST['email']),
+                                            password = request.POST['password'],
+                                            is_staff = True)
             try:
                 user.save()
                 login_user = authenticate(username = request.POST['username'],
