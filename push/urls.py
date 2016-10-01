@@ -7,6 +7,6 @@ urlpatterns = [
     url(r'^notification_list', views.notification_list, name = 'notification_list'),
     url(r'^settings', views.settings, name = 'settings'),
     url(r'^notification', views.notification, name = 'notification'),
-    url(r'^(?P<username>\w+)/register', views.device_token_register, name = 'device_token_register'),
+    url(r'^(?P<username>\w+)/register$', views.device_token_register, name = 'device_token_register'),
     url(r'^delete/device_token/(?P<device_token_id>\d+)/$', views.delete_device_token, name = 'delete_device_token'),
 ]

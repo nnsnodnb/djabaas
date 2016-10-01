@@ -155,7 +155,8 @@ def device_token_register(request, username):
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
-        return HttpResponseForbidden()
+        # return HttpResponseForbidden()
+        return HttpResponse('Access Denied', status=403)
 
 def prepare_push_notification(notification, device_tokens):
     device_token_lists = []

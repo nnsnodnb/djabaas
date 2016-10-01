@@ -51,7 +51,6 @@ def forget(request):
 
         return HttpResponse('ご登録のメールアドレスに仮パスワードを送信しました')
     else:
-        print('GET')
         c = {}
         c.update(csrf(request))
         return render_to_response('accounts/forget.html', c)
