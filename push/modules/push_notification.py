@@ -23,7 +23,7 @@ def execute(device_token_lists, notification):
     if notification.json != '':
         json_data = json.loads(notification.json)
 
-    payload = Payload(alert = notification.message.decode('utf-8'),
+    payload = Payload(alert = notification.message,
                       sound = notification.sound,
                       badge = notification.badge,
                       custom = json_data)
