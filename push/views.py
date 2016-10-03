@@ -38,7 +38,7 @@ def sender(request):
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
-    notifications = NotificationModel.objects.all()
+    notifications = NotificationModel.objects.filter(username = request.user.username)
     return render_to_response('push/notification_list.html',
                              {'notifications': notifications},
                              context_instance = RequestContext(request))
@@ -110,6 +110,7 @@ def notification(request):
             notification.content_available = True
         if request.POST.has_key('is_production'):
             notification.is_production = True
+        notification.username = request.user.username
 
         notification.save()
         device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
