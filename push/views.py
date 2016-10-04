@@ -113,7 +113,8 @@ def notification(request):
         notification.username = request.user.username
 
         notification.save()
-        device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version)
+        device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
+                                                        username = request.user.username)
 
         t = threading.Thread(target = prepare_push_notification, args = (notification, device_tokens))
         t.start();
