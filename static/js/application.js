@@ -45,3 +45,10 @@ $("#show_password").change(function() {
         $('#input_password').attr('type', 'password');
     }
 });
+
+$(function () {
+    $("#datetimepicker").datetimepicker({
+        language: "ja",
+        format: "YYYY/MM/DD hh:mm"
+    });
+});

@@ -7,6 +7,7 @@
         <title>{% block title %}mBaaS Service{% endblock %}</title>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/application.css' %}">
     </head>
@@ -15,7 +16,10 @@
             {{ content }}
         {% endblock %}
         <script src="{% static 'js/jquery.min.js' %}"></script>
+        <script src="{% static 'js/moment.min.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
+        <script src="{% static 'js/bootstrap-datetimepicker.min.js' %}"></script>
+        <script src="{% static 'js/locales/bootstrap-datetimepicker.ja.js' %}"></script>
         <script src="{% static 'js/application.js' %}"></script>
     </body>
 </html>
