@@ -23,6 +23,7 @@ class NotificationModel(models.Model):
     is_production = models.BooleanField(default = False)
     register_date = models.DateTimeField(default = datetime.now)
     username = models.CharField(max_length = 50)
+    execute_datetime = models.CharField(max_length = 20, default = '{0:%Y/%m/%d %H:%M}'.format(datetime.now()))
 
 class DevelopFileModel(models.Model):
     upload_username = models.CharField(max_length = 50, blank = True)
