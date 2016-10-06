@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
@@ -17,16 +18,7 @@ def register(request):
                                             is_staff = True)
             try:
                 user.save()
-                login_user = authenticate(username = request.POST['username'],
-                                          password = request.POST['password'])
-                if login_user is not None:
-                    if login_user.is_active:
-                        login(request, login_user)
-                        return redirect('push:index')
-                    else:
-                        return HttpResponse('Login Error')
-                else:
-                    return HttpResponse('Login Error')
+                execute_login('push:index', request.POST['username'], request.POST['password'])
             except Exception as e:
                 return HttpResponse(e)
         else:
@@ -55,6 +47,20 @@ def forget(request):
         c.update(csrf(request))
         return render_to_response('accounts/forget.html', c)
 
+@login_required(login_url = '/accounts/login/')
+def change_password(request):
+    if request.method == 'POST':
+        old = request.POST['old_password']
+        new = request.POST['new_password']
+        confirm = request.POST['confirm']
+        user = User.objects.get(username = request.user.username)
+        if user.check_password(old) and new == confirm:
+            user.set_password(new)
+            user.save()
+            execute_login('push:settings', user.username, new)
+    else:
+        return HttpResponse('Access Denied', status = 403)
+
 def prepare_mail(user):
     password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
     user.set_password(password)
@@ -70,3 +76,14 @@ def send_mail(title, body, to):
         return HttpResponse('Send your register email')
     except Exception as e:
         return HttpResponse(e)
+
+def execute_login(redirect_url, username, password):
+    login_user = authenticate(username = username, password = password)
+    if login_user is not None:
+        if login_user.is_active:
+            login(request, login_user)
+            return redirect(redirect_url)
+        else:
+            return HttpResponse('Login Error', status = 401)
+    else:
+        return HttpResponse('Login Error', status = 401)
