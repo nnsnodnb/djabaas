@@ -49,7 +49,8 @@ $("#show_password").change(function() {
 $(function () {
     $("#datetimepicker").datetimepicker({
         language: "ja",
-        format: "YYYY/MM/DD hh:mm"
+        format: "YYYY/MM/DD hh:mm",
+        minDate: moment(),
     });
 });
 
