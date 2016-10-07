@@ -43,6 +43,13 @@ def notification_list(request):
                              {'notifications': notifications},
                              context_instance = RequestContext(request))
 
+@login_required(login_url = '/accounts/login')
+def notification_detail(request, notification_id):
+    result = NotificationModel.objects.filter(id = notification_id)[0]
+    return render_to_response('push/notification_detail.html',
+                              {'result': result},
+                              context_instance = RequestContext(request))
+
 @login_required(login_url = '/accounts/login/')
 def settings(request):
     if request.method == 'POST' and (request.FILES.has_key('development') or request.FILES.has_key('production')):
