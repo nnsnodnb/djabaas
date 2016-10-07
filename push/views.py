@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
+from datetime import datetime
 import json, urllib, ast, sys, os, threading, os.path
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
@@ -123,11 +124,13 @@ def notification(request):
         notification.username = request.user.username
 
         notification.save()
-        device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
-                                                        username = request.user.username)
 
-        t = threading.Thread(target = prepare_push_notification, args = (notification, device_tokens))
-        t.start();
+        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()):
+            device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
+                                                            username = request.user.username)
+
+            t = threading.Thread(target = prepare_push_notification, args = (notification, device_tokens))
+            t.start();
 
         return redirect('push:notification_list')
     else:
