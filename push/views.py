@@ -1,3 +1,4 @@
+from ast import literal_eval
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
@@ -146,35 +147,53 @@ def detail_device_token(request, device_token_id):
 
 @csrf_exempt
 def device_token_register(request, username):
-    if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
+    if request.method == 'POST' and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
         response_data = {}
+        post_device_token, post_os_version = '', ''
+        json_data = literal_eval(request.body)
 
-        receive_json = json.loads(request.body)
-        if len(DeviceTokenModel.objects.filter(device_token = receive_json['device_token'],
-                                               username = username)) == 0:
-            try:
-                float_os_version = float(receive_json['os_version'])
-            except Exception as e:
-                os_version_arrays = receive_json['os_version'].split('.')
-                tmp_string = os_version_arrays[0] + '.' + os_version_arrays[1]
-                float_os_version = float(tmp_string)
+        if json_data.has_key('device_token'):
+            post_device_token = json_data['device_token']
+
+        if json_data.has_key('os_version'):
+            post_os_version = json_data['os_version']
+
+        device_token_model = DeviceTokenModel.objects.filter(device_token = post_device_token,
+                                                             username = username)
+
+        if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '':
+            float_os_version = convert_float_os_version(post_os_version)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
-                                           device_token = receive_json['device_token'],
+                                           device_token = post_device_token,
                                            username = username)
             insert_data.save()
 
             response_data['result'] = 'success'
-            response_data['message'] = '"' + receive_json['device_token'] + '" is registered'
+            response_data['message'] = '"' + post_device_token + '" is registered'
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
+            float_os_version = convert_float_os_version(post_os_version)
+
+            # Version down and Version up of iOS
+            if device_token_model[0].os_version != float_os_version:
+                device_token_model[0].os_version = float_os_version
+                device_token_model[0].save()
             response_data['result'] = 'success'
-            response_data['message'] = '"' + receive_json['device_token'] + '" was registered'
+            response_data['message'] = '"' + post_device_token + '" was registered'
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
         # return HttpResponseForbidden()
         return HttpResponse('Access Denied', status=403)
+
+def convert_float_os_version(os_version):
+    try:
+        return float(os_version['os_version'])
+    except Exception as e:
+        os_version_arrays = os_version.split('.')
+        tmp_string = os_version_arrays[0] + '.' + os_version_arrays[1]
+        return float(tmp_string)
 
 def prepare_push_notification(notification, device_tokens):
     device_token_lists = []
