@@ -132,7 +132,10 @@ def delete_device_token(request, device_token_id):
 
 @login_required(login_url = '/accounts/login')
 def detail_device_token(request, device_token_id):
-    return HttpResponse(device_token_id)
+    result = DeviceTokenModel.objects.filter(id = device_token_id)[0]
+    return render_to_response('push/device_token_detail.html',
+                             {'result': result},
+                             context_instance = RequestContext(request))
 
 @csrf_exempt
 def device_token_register(request, username):
