@@ -52,3 +52,10 @@ $(function () {
         format: "YYYY/MM/DD hh:mm"
     });
 });
+
+$('tr[data-href]').addClass('clickable')
+    .click(function(e) {
+    if($(e.target).is('td,th')) {
+        window.location = $(e.target).closest('tr').data('href');
+    };
+});

@@ -130,6 +130,10 @@ def delete_device_token(request, device_token_id):
     DeviceTokenModel.objects.filter(id = device_token_id).delete()
     return redirect('push:index')
 
+@login_required(login_url = '/accounts/login')
+def detail_device_token(request, device_token_id):
+    return HttpResponse(device_token_id)
+
 @csrf_exempt
 def device_token_register(request, username):
     if request.method == 'POST':# and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
