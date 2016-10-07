@@ -24,6 +24,7 @@ class NotificationModel(models.Model):
     register_date = models.DateTimeField(default = datetime.now)
     username = models.CharField(max_length = 50)
     execute_datetime = models.CharField(max_length = 16, default = '{0:%Y/%m/%d %H:%M}'.format(datetime.now()))
+    is_sent = models.BooleanField(default = False)
 
 class DevelopFileModel(models.Model):
     upload_username = models.CharField(max_length = 50, blank = True)
