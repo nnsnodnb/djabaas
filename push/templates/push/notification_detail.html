@@ -16,7 +16,7 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{% url 'push:index' %}">登録一覧</a></li>
                     <li><a href="{% url 'push:sender' %}">プッシュ通知登録</a></li>
-                    <li class="active"><a href="#">プッシュ通知送信履歴</a></li>
+                    <li class="active"><a href="{% url 'push:notification_list' %}">プッシュ通知送信履歴</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="/accounts/logout"><i class="fa fa-sign-out" aria-hidden="true"></i> ログアウト</a></li>
