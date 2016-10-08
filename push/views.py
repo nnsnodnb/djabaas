@@ -1,3 +1,5 @@
+# coding: utf-8
+
 from ast import literal_eval
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
