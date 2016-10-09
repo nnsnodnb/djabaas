@@ -117,6 +117,8 @@ def notification(request):
             notification.url = urllib.unquote(request.POST['url'])
         if request.POST['datetime'] != '':
             notification.execute_datetime = request.POST['datetime']
+        else:
+            notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
         if request.POST.has_key('json'):
             notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
         if request.POST.has_key('content-available'):
