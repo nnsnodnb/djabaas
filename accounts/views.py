@@ -14,8 +14,7 @@ def register(request):
         if request.POST['password'] == request.POST['password_confirm']:
             user = User.objects.create_user(username = request.POST['username'],
                                             email = urllib.unquote(request.POST['email']),
-                                            password = request.POST['password'],
-                                            is_staff = True)
+                                            password = request.POST['password'])
             try:
                 user.save()
                 execute_login('push:index', request.POST['username'], request.POST['password'])
