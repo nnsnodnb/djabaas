@@ -23,11 +23,11 @@ def register(request):
         else:
             c = {}
             c.update(csrf(request))
-            return render_to_response('accounts/register.html', c)
+            return render(request, 'accounts/register.html', c)
     else:
         c = {}
         c.update(csrf(request))
-        return render_to_response('accounts/register.html', c)
+        return render(request, 'accounts/register.html', c)
 
 def forget(request):
     if request.method == 'POST':
@@ -44,7 +44,7 @@ def forget(request):
     else:
         c = {}
         c.update(csrf(request))
-        return render_to_response('accounts/forget.html', c)
+        return render(request, 'accounts/forget.html', c)
 
 @login_required(login_url = '/accounts/login/')
 def change_password(request):

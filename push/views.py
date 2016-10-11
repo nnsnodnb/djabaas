@@ -32,13 +32,13 @@ def sender(request):
     c = {}
     c.update(csrf(request))
     if len(DevelopFileModel.objects.filter(upload_username = request.user.username)) > 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
-        return render_to_response('push/sender_develop.html', c)
+        return render(request, 'push/sender_develop.html', c)
     elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) > 0:
-        return render_to_response('push/sender_product.html', c)
+        return render(request, 'push/sender_product.html', c)
     elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
-        return render_to_response('push/sender_none.html', c)
+        return render(request, 'push/sender_none.html', c)
     else:
-        return render_to_response('push/sender.html', c)
+        return render(request, 'push/sender.html', c)
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
@@ -95,7 +95,7 @@ def settings(request):
     else:
         c = {}
         c.update(csrf(request))
-        return render_to_response('push/settings.html', c)
+        return render(request, 'push/settings.html', c)
 
 @login_required(login_url = '/accounts/login/')
 def notification(request):
