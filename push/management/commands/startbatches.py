@@ -4,7 +4,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from push.models import DeviceTokenModel, NotificationModel
 from datetime import datetime
+import os, os.path, sys
 
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '../../modules/')
 import push_notification
 
 class Command(BaseCommand):
