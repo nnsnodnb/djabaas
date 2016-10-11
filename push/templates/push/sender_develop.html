@@ -32,7 +32,6 @@
             <form class="form-horizontal" action="{% url 'push:notification' %}" method="POST"  onSubmit="return verification()">
                 <fieldset>
                     <legend>プッシュ通知登録</legend>
-                    <legend>{{ request.user.username }}</legend>
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="input_title" class="col-lg-2 control-label">タイトル</label>
