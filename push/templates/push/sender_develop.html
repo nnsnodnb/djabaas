@@ -29,9 +29,17 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-12 well">
+            <p><code>https://apps.nnsnodnb.moe/{{ request.user.username }}/register</code> に以下のようなJSONを送信してください</p>
+            <p><pre>{
+    "device_token": "5000f5e8c297f9c593b88bd881d53b4a95201e46cb28e4ffeda465d6f998cb58",
+    "os_version": "9.3"
+}</pre></p>
+        </div>
+        <div class="col-sm-12 well">
             <form class="form-horizontal" action="{% url 'push:notification' %}" method="POST"  onSubmit="return verification()">
                 <fieldset>
                     <legend>プッシュ通知登録</legend>
+                    <legend>{{ request.user.username }}</legend>
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="input_title" class="col-lg-2 control-label">タイトル</label>
