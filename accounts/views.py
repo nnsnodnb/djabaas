@@ -17,7 +17,7 @@ def register(request):
                                             password = request.POST['password'])
             try:
                 user.save()
-                execute_login('push:index', request.POST['username'], request.POST['password'])
+                execute_login('push:index', request.POST['username'], request.POST['password'], request)
             except Exception as e:
                 return HttpResponse(e)
         else:
@@ -57,7 +57,17 @@ def change_password(request):
             user.set_password(new)
             user.save()
             logout(request)
-            execute_login('push:settings', user.username, new)
+            login_user = authenticate(username = user.username, password = new)
+            if login_user is not None:
+                if login_user.is_active:
+                    login(request, login_user)
+                    return redirect('push:settings')
+                else:
+                    return HttpResponse('Login Error', status = 401)
+            else:
+                return HttpResponse('Login Error', status = 401)
+        else:
+            return HttpResponse('Login Error', status = 401)
     else:
         return HttpResponse('Access Denied', status = 403)
 
@@ -77,7 +87,7 @@ def send_mail(title, body, to):
     except Exception as e:
         return HttpResponse(e)
 
-def execute_login(redirect_url, username, password):
+def execute_login(redirect_url, username, password, request):
     login_user = authenticate(username = username, password = password)
     if login_user is not None:
         if login_user.is_active:
