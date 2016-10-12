@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
@@ -56,6 +56,7 @@ def change_password(request):
         if user.check_password(old) and new == confirm:
             user.set_password(new)
             user.save()
+            logout(request)
             execute_login('push:settings', user.username, new)
     else:
         return HttpResponse('Access Denied', status = 403)
