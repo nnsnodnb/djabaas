@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'mbaas.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'databasename',
-        'USER': 'username',
-        'PASSWORD': 'password',
+        'NAME': os.environ.get('DATABASE_NAME'),
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
         'HOST': '',
         'PORT': '',
     }
