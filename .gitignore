@@ -147,4 +147,3 @@ media
 ### Other file ###
 push/files/*
 !push/files/__init__.py
-mbaas/settings.py
