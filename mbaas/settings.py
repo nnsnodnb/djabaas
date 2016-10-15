@@ -1,3 +1,4 @@
+# coding: utf-8
 """
 Django settings for mbaas project.
 
@@ -24,8 +25,6 @@ SECRET_KEY = '6ur6@262on_ic#k)1eu5z9qwyo&!8x!w!rzt5!q5$rd6ywmn7%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -134,7 +133,7 @@ STATICFILES_DIRS = (
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'YOUR_GMAIL_ADDR'
-EMAIL_HOST_PASSWORD = 'YOUR_GMAIL_PASSWORD'
+EMAIL_HOST_USER = os.environ.get('GMAIL_MAIL_ADDRESS')
+EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_PASSWORD')
 EMAIL_PORT = 587
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
