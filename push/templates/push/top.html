@@ -30,6 +30,7 @@
     <div class="row">
         <div class="col-sm-12">
             {% if device_tokens %}
+                <p><a href="{% url 'push:download_device_token' %}"><button class="btn btn-success">ダウンロード（CSV形式）</button></a></p>
                 <table class="table table-striped table-hover">
                     <tr class="info">
                         <th>OSバージョン</th>

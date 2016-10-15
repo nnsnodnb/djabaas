@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
 from datetime import datetime
-import json, urllib, ast, sys, os, threading, os.path
+import json, urllib, ast, sys, os, threading, os.path, csv
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/modules')
@@ -26,6 +26,20 @@ def index(request):
     return render_to_response('push/top.html',
                              {'device_tokens': device_tokens},
                              context_instance = RequestContext(request))
+
+@login_required(login_url = '/accounts/login')
+def download_device_token(request):
+    device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
+
+    response = HttpResponse(content_type = 'text/csv')
+    response['Content-Disposition'] = 'attachment; filename="device_token_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['OS Version', 'Device Token', 'Register Date'])
+
+    for item in device_tokens:
+        writer.writerow([str(item.os_version), item.device_token, '{0:%Y/%m/%d %H:%M}'.format(item.register_datetime)])
+
+    return response
 
 @login_required(login_url = '/accounts/login/')
 def sender(request):
