@@ -23,9 +23,7 @@ import push_notification
 @login_required(login_url = '/accounts/login/')
 def index(request):
     device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
-    return render_to_response('push/top.html',
-                             {'device_tokens': device_tokens},
-                             context_instance = RequestContext(request))
+    return render(request, 'push/top.html', {'device_tokens': device_tokens})
 
 @login_required(login_url = '/accounts/login')
 def download_device_token(request):
@@ -43,30 +41,24 @@ def download_device_token(request):
 
 @login_required(login_url = '/accounts/login/')
 def sender(request):
-    c = {}
-    c.update(csrf(request))
     if len(DevelopFileModel.objects.filter(upload_username = request.user.username)) > 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
-        return render(request, 'push/sender_develop.html', c)
+        return render(request, 'push/sender.html', {'is_develop': True, 'is_product': False})
     elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) > 0:
-        return render(request, 'push/sender_product.html', c)
+        return render(request, 'push/sender.html', {'is_develop': False, 'is_product': True})
     elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
-        return render(request, 'push/sender_none.html', c)
+        return render(request, 'push/sender.html', {'is_develop': False, 'is_product': False})
     else:
-        return render(request, 'push/sender.html', c)
+        return render(request, 'push/sender.html', {'is_develop': True, 'is_product': True})
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
     notifications = NotificationModel.objects.filter(username = request.user.username)
-    return render_to_response('push/notification_list.html',
-                             {'notifications': notifications},
-                             context_instance = RequestContext(request))
+    return render(request, 'push/notification_list.html', {'notifications': notifications})
 
 @login_required(login_url = '/accounts/login')
 def notification_detail(request, notification_id):
     result = NotificationModel.objects.filter(id = notification_id)[0]
-    return render_to_response('push/notification_detail.html',
-                              {'result': result},
-                              context_instance = RequestContext(request))
+    return render(request, 'push/notification_detail.html', {'result': result})
 
 @login_required(login_url = '/accounts/login/')
 def settings(request):
@@ -81,7 +73,7 @@ def settings(request):
                                         production_file_name = str(request.user.username) + '/' + file.name)
 
         if '.pem' not in file.name:
-            return redirect('push:settings')
+            return render(request, 'push/settings.html', {'result': 'wrong'})
         else:
             USER_UPLOAD_DIR = UPLOAD_DIR + str(request.user.username) + '/'
             if os.path.isdir(USER_UPLOAD_DIR) == False:
@@ -105,11 +97,9 @@ def settings(request):
                 ProductFileModel.objects.all().delete()
             pem_file.save()
 
-        return redirect('push:settings')
+        return render(request, 'push/settings.html', {'result': 'success'})
     else:
-        c = {}
-        c.update(csrf(request))
-        return render(request, 'push/settings.html', c)
+        return render(request, 'push/settings.html')
 
 @login_required(login_url = '/accounts/login/')
 def notification(request):
@@ -169,9 +159,7 @@ def delete_device_token(request, device_token_id):
 @login_required(login_url = '/accounts/login')
 def detail_device_token(request, device_token_id):
     result = DeviceTokenModel.objects.filter(id = device_token_id)[0]
-    return render_to_response('push/device_token_detail.html',
-                             {'result': result},
-                             context_instance = RequestContext(request))
+    return render(request, 'push/device_token_detail.html', {'result': result})
 
 @csrf_exempt
 def device_token_register(request, username):

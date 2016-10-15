@@ -26,85 +26,105 @@
         </div>
     </div>
 </header>
-<div class="container">
-    <div class="row">
-        <div class="col-sm-12 well">
-            <form class="form-horizontal" action="{% url 'push:notification' %}" method="POST"  onSubmit="return verification()">
-                <fieldset>
-                    <legend>プッシュ通知登録</legend>
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="input_title" class="col-lg-2 control-label">タイトル</label>
-                        <div class="col-lg-10">
-                            <input type="text" id="input_title" name="title" class="form-control" placeholder="タイトル">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_message" class="col-lg-2 control-label">メッセージ</label>
-                        <div class="col-lg-10">
-                            <input type="text" id="input_message" name="message" class="form-control" placeholder="メッセージ">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_os_version" class="col-lg-2 control-label">OSバージョン</label>
-                        <div class="col-lg-10">
-                            <input type="number" id="input_os_version" name="os_version" class="form-control" placeholder="9.0や10.0など(リビジョンは省略)">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_sound" class="col-lg-2 control-label">音声</label>
-                        <div class="col-lg-10">
-                            <input type="text" id="input_sound" name="sound" class="form-control" placeholder="default" value="default">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_badge" class="col-lg-2 control-label">バッジ</label>
-                        <div class="col-lg-10">
-                            <input type="number" id="input_badge" name="badge" class="form-control" placeholder="0">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_url" class="col-lg-2 control-label">URL</label>
-                        <div class="col-lg-10">
-                            <input type="text" id="input_url" name="url" class="form-control" placeholder="https://example.com">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="datetimepicker" class="col-lg-2 control-label">送信日時</label>
-                        <div class="col-lg-10">
-                            <div class='input-group date' id='datetimepicker'>
-                                <input type='text' class="form-control" name="datetime">
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-calendar"></span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="input_json" class="col-lg-2 control-label">JSON</label>
-                        <div class="col-lg-10" id="json_check">
-                            <textarea class="form-control" rows="5" id="input_json" onChange="shaping_json(this)" placeholder="{'image': 'sample.jpg'}"></textarea>
-                        </div>
-                        <div class="checkbox col-lg-10 col-lg-offset-2">
-                            <label><input type="checkbox" name="content-available" value="true">content-available</label>
-                        </div>
-                    </div>
-                    <input type="hidden" id="send_json" value="">
-                    <div class="form-group">
-                        <label for="input_os_version" class="col-lg-2 control-label">配信方法</label>
-                        <div class="col-lg-10">
-                            <div class="checkbox">
-                                <label><input type="checkbox" name="is_production" value="true">配布用</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-10 col-lg-offset-2">
-                        <button class="btn btn-default" type="reset">キャンセル</button>
-                        <button class="btn btn-primary" type="submit">登録</button>
-                    </div>
-                </fieldset>
-            </form>
+{% if is_develop == False and is_product == False %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="alert alert-dismissible alert-danger">
+                    <h4><strong>ファイルが見つかりません</strong></h4>
+                    <p>先にpemファイルをアップロードしてください</p>
+                    <p><a href="{% url 'push:settings' %}">こちら</a>からpemファイルを設定してください</p>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+{% else %}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12 well">
+                <form class="form-horizontal" action="{% url 'push:notification' %}" method="POST"  onSubmit="return verification()">
+                    <fieldset>
+                        <legend>プッシュ通知登録</legend>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="input_title" class="col-lg-2 control-label">タイトル</label>
+                            <div class="col-lg-10">
+                                <input type="text" id="input_title" name="title" class="form-control" placeholder="タイトル">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_message" class="col-lg-2 control-label">メッセージ</label>
+                            <div class="col-lg-10">
+                                <input type="text" id="input_message" name="message" class="form-control" placeholder="メッセージ">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_os_version" class="col-lg-2 control-label">OSバージョン</label>
+                            <div class="col-lg-10">
+                                <input type="number" id="input_os_version" name="os_version" class="form-control" placeholder="9.0や10.0など(リビジョンは省略)">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_sound" class="col-lg-2 control-label">音声</label>
+                            <div class="col-lg-10">
+                                <input type="text" id="input_sound" name="sound" class="form-control" placeholder="default" value="default">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_badge" class="col-lg-2 control-label">バッジ</label>
+                            <div class="col-lg-10">
+                                <input type="number" id="input_badge" name="badge" class="form-control" placeholder="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_url" class="col-lg-2 control-label">URL</label>
+                            <div class="col-lg-10">
+                                <input type="text" id="input_url" name="url" class="form-control" placeholder="https://example.com">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="datetimepicker" class="col-lg-2 control-label">送信日時</label>
+                            <div class="col-lg-10">
+                                <div class='input-group date' id='datetimepicker'>
+                                    <input type='text' class="form-control" name="datetime">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="input_json" class="col-lg-2 control-label">JSON</label>
+                            <div class="col-lg-10" id="json_check">
+                                <textarea class="form-control" rows="5" id="input_json" onChange="shaping_json(this)" placeholder="{'image': 'sample.jpg'}"></textarea>
+                            </div>
+                            <div class="checkbox col-lg-10 col-lg-offset-2">
+                                <label><input type="checkbox" name="content-available" value="true">content-available</label>
+                            </div>
+                        </div>
+                        <input type="hidden" id="send_json" value="">
+                        <div class="form-group">
+                            <label for="input_os_version" class="col-lg-2 control-label">配信方法</label>
+                            <div class="col-lg-10">
+                                <div class="checkbox">
+                                    {% if is_develop and is_product == False %}
+                                        <label><input type="checkbox" name="is_production" value="true" disabled="disabled">配布用</label>
+                                    {% elif is_develop == False and is_product %}
+                                        <label><input type="checkbox" name="is_production" value="true" disabled="disabled" checked="checked">配布用</label>
+                                    {% elif is_develop and is_product %}
+                                        <label><input type="checkbox" name="is_production" value="true">配布用</label>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-10 col-lg-offset-2">
+                            <button class="btn btn-default" type="reset">キャンセル</button>
+                            <button class="btn btn-primary" type="submit">登録</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endif %}
 {% endblock content %}

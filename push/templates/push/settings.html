@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block title %}設定{% endblock title %}
 {% block content %}
+
+{% if result == 'success' %}
+    <script type="text/javascript">
+        alert('アップロード完了しました');
+        location.href = "{% url 'push:settings' %}";
+    </script>
+{% elif result == 'wrong' %}
+    <script type="text/javascript">
+        alert('ファイル形式が違います');
+        location.href = "{% url 'push:settings' %}";
+    </script>
+{% endif %}
+
 <header>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
