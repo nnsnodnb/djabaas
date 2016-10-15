@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from user_agents import parse
 from datetime import datetime
-import json, urllib, ast, sys, os, threading, os.path
+import json, urllib, ast, sys, os, threading, os.path, csv
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/modules')
@@ -26,6 +26,20 @@ def index(request):
     return render_to_response('push/top.html',
                              {'device_tokens': device_tokens},
                              context_instance = RequestContext(request))
+
+@login_required(login_url = '/accounts/login')
+def download_device_token(request):
+    device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
+
+    response = HttpResponse(content_type = 'text/csv')
+    response['Content-Disposition'] = 'attachment; filename="device_token_list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['OS Version', 'Device Token', 'Register Date'])
+
+    for item in device_tokens:
+        writer.writerow([str(item.os_version), item.device_token, '{0:%Y/%m/%d %H:%M}'.format(item.register_datetime)])
+
+    return response
 
 @login_required(login_url = '/accounts/login/')
 def sender(request):
@@ -116,7 +130,14 @@ def notification(request):
         if request.POST['url'] != '':
             notification.url = urllib.unquote(request.POST['url'])
         if request.POST['datetime'] != '':
-            notification.execute_datetime = request.POST['datetime']
+            tmp_datetime = request.POST['datetime'].split(' ')
+            date = tmp_datetime[0]
+            hour = tmp_datetime[1].split(':')[0]
+            minute = tmp_datetime[1].split(':')[1]
+            is_fm = True if tmp_datetime[2] == u'午後' else False
+            if is_fm:
+                hour = str(int(hour) + 12)
+            notification.execute_datetime = date + ' ' + hour + ':' + minute
         else:
             notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
         if request.POST.has_key('json'):

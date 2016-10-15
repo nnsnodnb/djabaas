@@ -5,6 +5,7 @@ from push import views
 
 urlpatterns = [
     url(r'^$', views.index, name = 'index'),
+    url(r'^download_device_token$', views.download_device_token, name = 'download_device_token'),
     url(r'^sender', views.sender, name = 'sender'),
     url(r'^notification_list/$', views.notification_list, name = 'notification_list'),
     url(r'^notification_detail/(?P<notification_id>\d+$)', views.notification_detail, name = 'notification_detail'),
