@@ -130,7 +130,14 @@ def notification(request):
         if request.POST['url'] != '':
             notification.url = urllib.unquote(request.POST['url'])
         if request.POST['datetime'] != '':
-            notification.execute_datetime = request.POST['datetime']
+            tmp_datetime = request.POST['datetime'].split(' ')
+            date = tmp_datetime[0]
+            hour = tmp_datetime[1].split(':')[0]
+            minute = tmp_datetime[1].split(':')[1]
+            is_fm = True if tmp_datetime[2] == u'午後' else False
+            if is_fm:
+                hour = str(int(hour) + 12)
+            notification.execute_datetime = date + ' ' + hour + ':' + minute
         else:
             notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
         if request.POST.has_key('json'):
