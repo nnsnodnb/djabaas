@@ -1,6 +1,5 @@
 # coding: utf-8
 
-from ast import literal_eval
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
@@ -11,8 +10,9 @@ from django.template.context_processors import csrf
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 
-from user_agents import parse
+from ast import literal_eval
 from datetime import datetime
+from user_agents import parse
 import json, urllib, ast, sys, os, threading, os.path, csv
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
@@ -140,7 +140,7 @@ def notification(request):
 
         notification.save()
 
-        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()):
+        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()) or notification.execute_datetime == '':
             device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
                                                             username = request.user.username)
 
