@@ -10,6 +10,8 @@
                     <h3 class="panel-title text-center">パスワードを忘れた</h3>
                 </div>
                 <div class="panel-body">
+                    <p><button class="btn btn-default" onClick="javascript:history.back()"><i class="fa fa-undo" aria-hidden="true"></i> 戻る</button></p>
+                    <hr>
                     <form class="form-horizontal" action="{% url 'accounts:forget' %}" method="POST">
                         <fieldset>
                             {% csrf_token %}
@@ -30,7 +32,6 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-9 col-lg-offset-3">
-                                    <button class="btn btn-default" onClick="javascript:history.back()">戻る</button>
                                     <button type="reset" class="btn btn-default">リセット</button>
                                     <input type="submit" class="btn btn-primary" value="送信">
                                 </div>

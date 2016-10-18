@@ -15,28 +15,21 @@ def register(request):
             user = User.objects.create_user(username = request.POST['username'],
                                             email = urllib.unquote(request.POST['email']),
                                             password = request.POST['password'])
-            try:
-                user.save()
-                login_user = authenticate(username = request.POST['username'],
-                                          password = request.POST['password'])
-                if login_user is not None:
-                    if login_user.is_active:
-                        login(request, login_user)
-                        return redirect('push:index')
-                    else:
-                        return HttpResponse('Login Error', status = 401)
+            user.save()
+            login_user = authenticate(username = request.POST['username'],
+                                      password = request.POST['password'])
+            if login_user is not None:
+                if login_user.is_active:
+                    login(request, login_user)
+                    return redirect('push:index')
                 else:
-                    return HttpResponse('Login Error', status = 401)
-            except Exception as e:
-                return HttpResponse(e)
+                    return redirect('accounts:login')
+            else:
+                return redirect('accounts:login')
         else:
-            c = {}
-            c.update(csrf(request))
-            return render(request, 'accounts/register.html', c)
+            return render(request, 'accounts/register.html', {'error': 'password'})
     else:
-        c = {}
-        c.update(csrf(request))
-        return render(request, 'accounts/register.html', c)
+        return render(request, 'accounts/register.html')
 
 def forget(request):
     if request.method == 'POST':
@@ -51,9 +44,7 @@ def forget(request):
 
         return HttpResponse('ご登録のメールアドレスに仮パスワードを送信しました')
     else:
-        c = {}
-        c.update(csrf(request))
-        return render(request, 'accounts/forget.html', c)
+        return render(request, 'accounts/forget.html')
 
 @login_required(login_url = '/accounts/login/')
 def change_password(request):
