@@ -17,7 +17,16 @@ def register(request):
                                             password = request.POST['password'])
             try:
                 user.save()
-                execute_login('push:index', request.POST['username'], request.POST['password'], request)
+                login_user = authenticate(username = request.POST['username'],
+                                          password = request.POST['password'])
+                if login_user is not None:
+                    if login_user.is_active:
+                        login(request, login_user)
+                        return redirect('push:index')
+                    else:
+                        return HttpResponse('Login Error', status = 401)
+                else:
+                    return HttpResponse('Login Error', status = 401)
             except Exception as e:
                 return HttpResponse(e)
         else:
