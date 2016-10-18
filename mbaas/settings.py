@@ -24,8 +24,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '6ur6@262on_ic#k)1eu5z9qwyo&!8x!w!rzt5!q5$rd6ywmn7%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -39,7 +40,6 @@ INSTALLED_APPS = [
     'push',
     'accounts',
     'gunicorn',
-    'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
