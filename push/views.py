@@ -140,7 +140,7 @@ def notification(request):
 
         notification.save()
 
-        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()):
+        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()) or notification.execute_datetime == '':
             device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
                                                             username = request.user.username)
 
