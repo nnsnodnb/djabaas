@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Server Error{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="alert alert-dismissible alert-danger">
+                <h4><strong>サーバエラーが発生しました。</strong></h4>
+                <p><a href="https://github.com/nnsnodnb/django-mbaas/issues/new" target="new">こちら</a>からバグ報告をしてくださると幸いです。</p>
+                <p>ご迷惑をおかけして申し訳ありません。</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
