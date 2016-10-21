@@ -7,7 +7,8 @@ from django.core.mail import EmailMessage
 from django.http import HttpResponse
 from django.shortcuts import render, render_to_response, redirect
 from django.template.context_processors import csrf
-import urllib, random, string
+import urllib, random, string, os, sendgrid
+from sendgrid.helpers.mail import *
 
 def register(request):
     if request.method == 'POST':
@@ -82,10 +83,16 @@ def prepare_mail(user):
 
 def send_mail(title, body, to):
     try:
-        EmailMessage(title, body, to = [to]).send()
-        return HttpResponse('Send your register email')
+        sg = sendgrid.SendGridAPIClient(apikey = os.environ.get('SENDGRID_API_KEY'))
+        from_email = Email("info@nnsnodnb.moe")
+        subject = title
+        to_email = Email(to)
+        content = Content("text/plain", body)
+        mail = Mail(from_email, subject, to_email, content)
+        response = sg.client.mail.send.post(request_body = mail.get())
+        return HttpResponse('Send your register email', status = 200)
     except Exception as e:
-        return HttpResponse(e)
+        return HttpResponse(e, status = 500)
 
 def execute_login(redirect_url, username, password, request):
     login_user = authenticate(username = username, password = password)
