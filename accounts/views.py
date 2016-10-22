@@ -9,18 +9,19 @@ from django.shortcuts import render, render_to_response, redirect
 from django.template.context_processors import csrf
 import urllib, random, string, os, sendgrid
 from sendgrid.helpers.mail import *
+from accounts.models import UserActivateTokenModel
 
 def register(request):
     if request.method == 'POST':
         if request.POST['password'] == request.POST['password_confirm']:
-            user = User.objects.create_user(username = request.POST['username'],
-                                            email = urllib.unquote(request.POST['email']),
-                                            password = request.POST['password'],
-                                            is_active = False)
             try:
+                user = User.objects.create_user(username = request.POST['username'],
+                                                email = urllib.unquote(request.POST['email']),
+                                                password = request.POST['password'],
+                                                is_active = False)
                 user.save()
             except Exception as e:
-                return redirect('accounts/register.html', {'error': 'unique_error'})
+                return render(request, 'accounts/register.html', {'error': 'unique_error'})
 
             login_user = authenticate(username = request.POST['username'],
                                       password = request.POST['password'])
@@ -29,7 +30,8 @@ def register(request):
                     login(request, login_user)
                     return redirect('push:index')
                 else:
-                    return redirect('accounts:login')
+                    prepare_mail_register(user)
+                    return HttpResponse('入力されたメールアドレスにメールを送信しました。ご確認お願いします。')
             else:
                 return redirect('accounts:login')
         else:
@@ -77,6 +79,44 @@ def change_password(request):
     else:
         return HttpResponse('Access Denied', status = 403)
 
+def create_token():
+    return ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
+
+def confirm(request):
+    if request.method == 'GET':
+        activate_user = UserActivateTokenModel.objects.filter(token = request.GET['token'])[0]
+        activate_user.is_user = True
+        activate_user.save()
+
+        user = User.objects.get(username = activate_user.username)
+        user.is_active = True
+        user.save()
+        login_user = authenticate(username = user.username, password = user.password)
+        if login_user is not None:
+            if login_user.is_active:
+                login(request, login_user)
+                return redirect('push:index')
+            else:
+                return HttpResponse('Login Error', status = 401)
+        else:
+            return HttpResponse('Login Error', status = 401)
+    else:
+        return redirect('accounts:login')
+
+def prepare_mail_register(user):
+    token = create_token()
+    while len(UserActivateTokenModel.objects.filter(token = token)) == 1:
+        token = create_token()
+
+    activate_user = UserActivateTokenModel(username = user.username,
+                                           token = token)
+    activate_user.save()
+
+    send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
+この度は新規登録していただきありがとうございます！\n
+以下のURLよりユーザをアクティベートしてください。\n\n
+https://127.0.0.1:8000/accounts/confirm?token=""" + token, user.email, 'register')
+
 def prepare_mail_forget(user):
     password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
     user.set_password(password)
@@ -84,12 +124,12 @@ def prepare_mail_forget(user):
     send_mail(u'パスワード再発行', user.username + u"""様\n\n
 パスワードを再発行いたしました。
 ログイン後はすぐにパスワードを変更してください。\n\n
-パスワード：""" + password, user.email, "info@nnsnodnb.moe")
+パスワード：""" + password, user.email, 'info')
 
 def send_mail(title, body, to, from_address):
     try:
         sg = sendgrid.SendGridAPIClient(apikey = os.environ.get('SENDGRID_API_KEY'))
-        from_email = Email(from_address)
+        from_email = Email(from_address + '@nnsnodnb.moe')
         subject = title
         to_email = Email(to)
         content = Content("text/plain", body)

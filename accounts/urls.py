@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^entry/$', views.register, name = 'register'),
     url(r'^forget/$', views.forget, name = 'forget'),
     url(r'^change_password/$', views.change_password, name='change_password'),
+    url(r'^confirm', views.confirm, name='confirm'),
 ]
