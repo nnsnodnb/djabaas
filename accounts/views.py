@@ -15,8 +15,13 @@ def register(request):
         if request.POST['password'] == request.POST['password_confirm']:
             user = User.objects.create_user(username = request.POST['username'],
                                             email = urllib.unquote(request.POST['email']),
-                                            password = request.POST['password'])
-            user.save()
+                                            password = request.POST['password'],
+                                            is_active = False)
+            try:
+                user.save()
+            except Exception as e:
+                return redirect('accounts/register.html', {'error': 'unique_error'})
+
             login_user = authenticate(username = request.POST['username'],
                                       password = request.POST['password'])
             if login_user is not None:
@@ -36,10 +41,10 @@ def forget(request):
     if request.method == 'POST':
         if request.POST['username'] != '':
             user = User.objects.get(username = request.POST['username'])
-            prepare_mail(user)
+            prepare_mail_forget(user)
         elif request.POST['email'] != '':
             user = User.objects.get(email = request.POST['email'])
-            prepare_mail(user)
+            prepare_mail_forget(user)
         else:
             return redirect('accounts:forget')
 
@@ -72,19 +77,19 @@ def change_password(request):
     else:
         return HttpResponse('Access Denied', status = 403)
 
-def prepare_mail(user):
+def prepare_mail_forget(user):
     password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
     user.set_password(password)
     user.save()
     send_mail(u'パスワード再発行', user.username + u"""様\n\n
 パスワードを再発行いたしました。
 ログイン後はすぐにパスワードを変更してください。\n\n
-パスワード：""" + password, user.email)
+パスワード：""" + password, user.email, "info@nnsnodnb.moe")
 
-def send_mail(title, body, to):
+def send_mail(title, body, to, from_address):
     try:
         sg = sendgrid.SendGridAPIClient(apikey = os.environ.get('SENDGRID_API_KEY'))
-        from_email = Email("info@nnsnodnb.moe")
+        from_email = Email(from_address)
         subject = title
         to_email = Email(to)
         content = Content("text/plain", body)
