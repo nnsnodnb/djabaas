@@ -23,6 +23,9 @@ def execute(device_token_lists, notification):
     if notification.json != '':
         json_data = json.loads(notification.json)
 
+    if notification.content_available:
+        json_data['content-avalilable'] = 1
+
     payload = Payload(alert = notification.message,
                       sound = notification.sound,
                       badge = notification.badge,
