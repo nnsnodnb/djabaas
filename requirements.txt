@@ -2,6 +2,7 @@ apns==2.0.1
 Django==1.9.1
 django-debug-toolbar==1.5
 gunicorn==19.6.0
+pycrypto==2.6.1
 python-http-client==2.2.1
 sendgrid==3.6.0
 sqlparse==0.2.1
