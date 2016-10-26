@@ -10,6 +10,7 @@ from django.template.context_processors import csrf
 import urllib, random, string, os, sendgrid
 from sendgrid.helpers.mail import *
 from accounts.models import UserActivateTokenModel
+import encryption
 
 def register(request):
     if request.method == 'POST':
@@ -30,6 +31,8 @@ def register(request):
                     login(request, login_user)
                     return redirect('push:index')
                 else:
+                    tail_word = ''.join([random.choice(string.letters + string.digits) for i in xrange(5)])
+                    encrypt_pass = execute_encryption(True, request.POST['password'] + tail_word)
                     prepare_mail_register(user)
                     return HttpResponse('入力されたメールアドレスにメールを送信しました。ご確認お願いします。')
             else:
