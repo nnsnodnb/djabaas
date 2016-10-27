@@ -6,5 +6,5 @@ from django.db import models
 
 class UserActivateTokenModel(models.Model):
     username = models.CharField(max_length = 50)
-    token = models.CharField(max_length = 100)
+    token = models.CharField(max_length = 5)
     is_user = models.BooleanField(default = False)

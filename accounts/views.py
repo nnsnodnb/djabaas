@@ -32,8 +32,8 @@ def register(request):
                     return redirect('push:index')
                 else:
                     tail_word = ''.join([random.choice(string.letters + string.digits) for i in xrange(5)])
-                    encrypt_pass = execute_encryption(True, request.POST['password'] + tail_word)
-                    prepare_mail_register(user)
+                    encrypt_pass = encryption.execute_encryption(True, request.POST['password'])
+                    prepare_mail_register(user, str(encrypt_pass), tail_word)
                     return HttpResponse('入力されたメールアドレスにメールを送信しました。ご確認お願いします。')
             else:
                 return redirect('accounts:login')
@@ -82,19 +82,20 @@ def change_password(request):
     else:
         return HttpResponse('Access Denied', status = 403)
 
-def create_token():
-    return ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
-
 def confirm(request):
     if request.method == 'GET':
-        activate_user = UserActivateTokenModel.objects.filter(token = request.GET['token'])[0]
+        encrypt_pass = request.GET['token']
+        activate_user = UserActivateTokenModel.objects.filter(token = request.GET['user'])[0]
+        tail = activate_user.token
+        decrypted_pass = encryption.execute_encryption(False, encrypt_pass.split(token)[0])
+
         activate_user.is_user = True
         activate_user.save()
 
         user = User.objects.get(username = activate_user.username)
         user.is_active = True
         user.save()
-        login_user = authenticate(username = user.username, password = user.password)
+        login_user = authenticate(username = user.username, password = decrypted_pass)
         if login_user is not None:
             if login_user.is_active:
                 login(request, login_user)
@@ -106,19 +107,15 @@ def confirm(request):
     else:
         return redirect('accounts:login')
 
-def prepare_mail_register(user):
-    token = create_token()
-    while len(UserActivateTokenModel.objects.filter(token = token)) == 1:
-        token = create_token()
-
+def prepare_mail_register(user, encrypt, token):
     activate_user = UserActivateTokenModel(username = user.username,
                                            token = token)
     activate_user.save()
 
+    url = 'http://127.0.0.1:8000/accounts/confirm?user=' + user.username + '&token=' + encrypt + token
     send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
 この度は新規登録していただきありがとうございます！\n
-以下のURLよりユーザをアクティベートしてください。\n\n
-https://127.0.0.1:8000/accounts/confirm?token=""" + token, user.email, 'register')
+以下のURLよりユーザをアクティベートしてください。\n\n""" + url, user.email, 'register')
 
 def prepare_mail_forget(user):
     password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
