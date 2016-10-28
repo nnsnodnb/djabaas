@@ -8,7 +8,7 @@ def execute_encryption(is_encryption, input_word):
     if is_encryption:
         hash_sha256 = SHA256.new()
         hash_sha256.update(input_word)
-        executed_word = hash_sha512.hexdigest()
+        executed_word = hash_sha256.hexdigest()
     else:
         executed_word = private_key.decrypt(input_word)
 
