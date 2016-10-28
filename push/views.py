@@ -165,7 +165,7 @@ def detail_device_token(request, device_token_id):
 def device_token_register(request, username):
     if request.method == 'POST' and request.META['HTTP_USER_AGENT'] == 'iOS/nnsnodnb-mBaaS-Service':
         response_data = {}
-        post_device_token, post_os_version = '', ''
+        post_device_token, post_os_version, post_uuid = '', '', ''
         json_data = literal_eval(request.body)
 
         if json_data.has_key('device_token'):
@@ -174,10 +174,14 @@ def device_token_register(request, username):
         if json_data.has_key('os_version'):
             post_os_version = json_data['os_version']
 
-        device_token_model = DeviceTokenModel.objects.filter(device_token = post_device_token,
-                                                             username = username)
+        if json_data.has_key('uuid'):
+            post_uuid = json_data['uuid']
 
-        if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '':
+        device_token_model = DeviceTokenModel.objects.filter(device_token = post_device_token,
+                                                             username = username,
+                                                             uuid = post_uuid)
+
+        if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
             float_os_version = convert_float_os_version(post_os_version)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,

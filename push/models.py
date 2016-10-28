@@ -12,6 +12,7 @@ class DeviceTokenModel(models.Model):
     register_datetime = models.DateTimeField(default = datetime.now)
     update_datetime = models.DateTimeField(default = datetime.now)
     username = models.CharField(max_length = 50)
+    uuid = models.CharField(max_length = 36)
 
 class NotificationModel(models.Model):
     title = models.CharField(max_length = 200, blank = True)
