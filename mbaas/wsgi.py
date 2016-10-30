@@ -32,6 +32,9 @@ def load_env():
 
 from django.core.wsgi import get_wsgi_application
 
+import pymysql
+pymysql.install_as_MySQLdb()
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mbaas.settings")
 
 load_env()
