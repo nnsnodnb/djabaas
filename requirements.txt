@@ -6,6 +6,7 @@ pycrypto==2.6.1
 PyMySQL==0.7.9
 python-http-client==2.2.1
 sendgrid==3.6.0
+Simple-AES-Cipher==1.0.0
 sqlparse==0.2.1
 ua-parser==0.7.1
 user-agents==1.0.1
