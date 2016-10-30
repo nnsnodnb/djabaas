@@ -16,6 +16,8 @@ def execute_encryption(is_encryption, input_word):
         executed_word = cipher.encrypt(input_word)
     else:
         # Dencryption
+        if ' ' in input_word:
+            input_word = input_word.replace(' ', '+')
         executed_word = cipher.decrypt(input_word)
 
     return executed_word

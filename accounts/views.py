@@ -85,9 +85,10 @@ def change_password(request):
 def confirm(request):
     if request.method == 'GET':
         encrypt_pass = request.GET['token']
-        activate_user = UserActivateTokenModel.objects.filter(token = request.GET['user'])[0]
-        tail = activate_user.token
-        decrypted_pass = encryption.execute_encryption(False, encrypt_pass.split(token)[0])
+        session_id = request.GET['session_id']
+        activate_user = UserActivateTokenModel.objects.filter(token = request.GET['session_id'])[0]
+
+        decrypted_pass = encryption.execute_encryption(False, encrypt_pass)
 
         activate_user.is_user = True
         activate_user.save()
@@ -112,7 +113,7 @@ def prepare_mail_register(user, encrypt, token):
                                            token = token)
     activate_user.save()
 
-    url = 'http://127.0.0.1:8000/accounts/confirm?user=' + user.username + '&token=' + encrypt + token
+    url = 'http://127.0.0.1:8000/accounts/confirm?token=' + encrypt + '&session_id=' + token
     send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
 この度は新規登録していただきありがとうございます！\n
 以下のURLよりユーザをアクティベートしてください。\n\n""" + url, user.email, 'register')
