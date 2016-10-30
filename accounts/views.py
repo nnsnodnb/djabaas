@@ -113,7 +113,7 @@ def prepare_mail_register(user, encrypt, token):
                                            token = token)
     activate_user.save()
 
-    url = 'http://127.0.0.1:8000/accounts/confirm?token=' + encrypt + '&session_id=' + token
+    url = 'https://apps.nnsnodnb.moe/accounts/confirm?token=' + encrypt + '&session_id=' + token
     send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
 この度は新規登録していただきありがとうございます！\n
 以下のURLよりユーザをアクティベートしてください。\n\n""" + url, user.email, 'register')
