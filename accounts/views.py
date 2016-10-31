@@ -91,7 +91,7 @@ def confirm(request):
         decrypted_pass = encryption.execute_encryption(False, encrypt_pass)
 
         activate_user.is_user = True
-        activate_user.save()
+        activate_user.delete()
 
         user = User.objects.get(username = activate_user.username)
         user.is_active = True
