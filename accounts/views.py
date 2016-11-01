@@ -5,12 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.http import HttpResponse
-from django.shortcuts import render, render_to_response, redirect
+from django.shortcuts import render, redirect
 from django.template.context_processors import csrf
-import urllib, random, string, os, sendgrid
-from sendgrid.helpers.mail import *
+import urllib, random, string, os
 from accounts.models import UserActivateTokenModel
-import encryption
+import encryption, mail_client
 
 def register(request):
     if request.method == 'POST':
@@ -33,7 +32,7 @@ def register(request):
                 else:
                     tail_word = ''.join([random.choice(string.letters + string.digits) for i in xrange(5)])
                     encrypt_pass = encryption.execute_encryption(True, request.POST['password'])
-                    prepare_mail_register(user, str(encrypt_pass), tail_word)
+                    mail_client.prepare_mail_register(user, str(encrypt_pass), tail_word)
                     return HttpResponse('入力されたメールアドレスにメールを送信しました。ご確認お願いします。')
             else:
                 return redirect('accounts:login')
@@ -46,10 +45,10 @@ def forget(request):
     if request.method == 'POST':
         if request.POST['username'] != '':
             user = User.objects.get(username = request.POST['username'])
-            prepare_mail_forget(user)
+            mail_client.prepare_mail_forget(user)
         elif request.POST['email'] != '':
             user = User.objects.get(email = request.POST['email'])
-            prepare_mail_forget(user)
+            mail_client.prepare_mail_forget(user)
         else:
             return redirect('accounts:forget')
 
@@ -127,46 +126,3 @@ def delete_user(request):
 
 def complete_delete(request):
     return render(request, 'accounts/delete.html')
-
-def prepare_mail_register(user, encrypt, token):
-    activate_user = UserActivateTokenModel(username = user.username,
-                                           token = token)
-    activate_user.save()
-
-    url = 'https://apps.nnsnodnb.moe/accounts/confirm?token=' + encrypt + '&session_id=' + token
-    send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
-この度は新規登録していただきありがとうございます！\n
-以下のURLよりユーザをアクティベートしてください。\n\n""" + url, user.email, 'register')
-
-def prepare_mail_forget(user):
-    password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
-    user.set_password(password)
-    user.save()
-    send_mail(u'パスワード再発行', user.username + u"""様\n\n
-パスワードを再発行いたしました。
-ログイン後はすぐにパスワードを変更してください。\n\n
-パスワード：""" + password, user.email, 'info')
-
-def send_mail(title, body, to, from_address):
-    try:
-        sg = sendgrid.SendGridAPIClient(apikey = os.environ.get('SENDGRID_API_KEY'))
-        from_email = Email(from_address + '@nnsnodnb.moe')
-        subject = title
-        to_email = Email(to)
-        content = Content("text/plain", body)
-        mail = Mail(from_email, subject, to_email, content)
-        response = sg.client.mail.send.post(request_body = mail.get())
-        return HttpResponse('Send your register email', status = 200)
-    except Exception as e:
-        return HttpResponse(e, status = 500)
-
-def execute_login(redirect_url, username, password, request):
-    login_user = authenticate(username = username, password = password)
-    if login_user is not None:
-        if login_user.is_active:
-            login(request, login_user)
-            return redirect(redirect_url)
-        else:
-            return HttpResponse('Login Error', status = 401)
-    else:
-        return HttpResponse('Login Error', status = 401)
