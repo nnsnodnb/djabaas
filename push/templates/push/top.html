@@ -36,11 +36,13 @@
                         <th>OSバージョン</th>
                         <th>登録日時</th>
                         <th>更新日時</th>
+                        <th>削除</th>
                     </tr>
                     {% for device_token in device_tokens %}
                         <tr data-href="{% url 'push:detail_device_token' device_token_id=device_token.id %}">
                             <td>{{ device_token.os_version }}</td>
                             <td>{{ device_token.register_datetime }}</td>
+                            <td>{{ device_token.update_datetime }}</td>
                             <td>
                                 <a href="{% url 'push:delete_device_token' device_token_id=device_token.id %}">
                                     <button class="btn btn-danger btn-xs" onClick="return confirm('削除してもいいですか？')">削除</button>
