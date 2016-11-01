@@ -12,6 +12,11 @@
         alert('ファイル形式が違います');
         location.href = "{% url 'push:settings' %}";
     </script>
+{% elif result == 'pass_miss' %}
+    <script type="text/javascript">
+        alert('パスワードが間違っています');
+        location.href = "{% url 'push:settings' %}";
+    </script>
 {% endif %}
 
 <header>
@@ -112,6 +117,30 @@
                                 <label for="confirm" class="col-lg-4 control-label">確認用</label>
                                 <div class="col-lg-8">
                                     <input type="password" name="confirm" id="confirm" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-lg-8 col-lg-offset-4">
+                                <button class="btn btn-default" type="reset">キャンセル</button>
+                                <button class="btn btn-primary" type="submit">更新</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">アカウント削除</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" method="POST" action="{% url 'accounts:delete_user' %}">
+                        <fieldset>
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="password" class="col-lg-4 control-label">パスワード</label>
+                                <div class="col-lg-8">
+                                    <input type="password" name="password" id="password" class="form-control" required>
                                 </div>
                             </div>
                             <div class="col-lg-8 col-lg-offset-4">
