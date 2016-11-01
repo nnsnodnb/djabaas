@@ -108,6 +108,26 @@ def confirm(request):
     else:
         return redirect('accounts:login')
 
+@login_required(login_url = '/accounts/login/')
+def delete_user(request):
+    if request.method == 'POST':
+        password = request.POST['password']
+        user = User.objects.get(username = request.user.username)
+        if user.check_password(password):
+            user.is_active = False
+            try:
+                user.save()
+            except Exception as e:
+                return HttpResponse(e, status = 500)
+            return redirect('accounts:complete_delete')
+        else:
+            return render(request, 'push/settings.html', {'result': 'pass_miss'})
+    else:
+        return HttpResponse('Not allowed method', status = 405)
+
+def complete_delete(request):
+    return render(request, 'accounts/delete.html')
+
 def prepare_mail_register(user, encrypt, token):
     activate_user = UserActivateTokenModel(username = user.username,
                                            token = token)
