@@ -14,11 +14,9 @@ from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
 import json, urllib, ast, sys, os, threading, os.path, csv
+import push_notification
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
-sys.path.append(os.path.dirname(os.path.abspath(__file__)) + '/modules')
-
-import push_notification
 
 @login_required(login_url = '/accounts/login/')
 def index(request):
