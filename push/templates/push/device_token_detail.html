@@ -40,6 +40,7 @@
                 <p>デバイストークン　: {{ result.device_token }}</p>
                 <p>登録日時　　　　　: {{ result.register_datetime }}</p>
                 <p>更新日時　　　　　: {{ result.update_datetime }}</p>
+                <p>ＵＵＩＤ　　　　　: {{ result.uuid }}</p>
                 <a href="{% url 'push:delete_device_token' device_token_id=result.id %}">
                     <button class="btn btn-danger" onClick="return confirm('削除してもいいですか？')">削除</button>
                 </a>
