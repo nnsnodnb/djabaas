@@ -184,7 +184,8 @@ def device_token_register(request, username):
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
                                            device_token = post_device_token,
-                                           username = username)
+                                           username = username,
+                                           uuid = post_uuid)
             insert_data.save()
 
             response_data['result'] = 'success'
