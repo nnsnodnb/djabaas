@@ -39,11 +39,11 @@ def download_device_token(request):
 
 @login_required(login_url = '/accounts/login/')
 def sender(request):
-    if len(DevelopFileModel.objects.filter(upload_username = request.user.username)) > 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+    if DevelopFileModel.objects.filter(upload_username = request.user.username).count() > 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() == 0:
         return render(request, 'push/sender.html', {'is_develop': True, 'is_product': False})
-    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) > 0:
+    elif DevelopFileModel.objects.filter(upload_username = request.user.username).count() == 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() > 0:
         return render(request, 'push/sender.html', {'is_develop': False, 'is_product': True})
-    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+    elif DevelopFileModel.objects.filter(upload_username = request.user.username).count() == 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() == 0:
         return render(request, 'push/sender.html', {'is_develop': False, 'is_product': False})
     else:
         return render(request, 'push/sender.html', {'is_develop': True, 'is_product': True})
