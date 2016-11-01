@@ -14,7 +14,7 @@ from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
 import json, urllib, ast, sys, os, threading, os.path, csv
-import push_notification
+import utils
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 
@@ -142,7 +142,7 @@ def notification(request):
             device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
                                                             username = request.user.username)
 
-            t = threading.Thread(target = prepare_push_notification, args = (notification, device_tokens))
+            t = threading.Thread(target = utils.prepare_push_notification, args = (notification, device_tokens))
             t.start();
 
         return redirect('push:notification_list')
@@ -180,7 +180,7 @@ def device_token_register(request, username):
                                                              uuid = post_uuid)
 
         if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
-            float_os_version = convert_float_os_version(post_os_version)
+            float_os_version = utils.convert_float_os_version(post_os_version)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
                                            device_token = post_device_token,
@@ -191,7 +191,7 @@ def device_token_register(request, username):
             response_data['message'] = '"' + post_device_token + '" is registered'
             return HttpResponse(json.dumps(response_data), content_type="application/json")
         else:
-            float_os_version = convert_float_os_version(post_os_version)
+            float_os_version = utils.convert_float_os_version(post_os_version)
 
             # Version down and Version up of iOS
             if device_token_model[0].os_version != float_os_version:
@@ -204,18 +204,3 @@ def device_token_register(request, username):
     else:
         # return HttpResponseForbidden()
         return HttpResponse('Access Denied', status=403)
-
-def convert_float_os_version(os_version):
-    try:
-        return float(os_version['os_version'])
-    except Exception as e:
-        os_version_arrays = os_version.split('.')
-        tmp_string = os_version_arrays[0] + '.' + os_version_arrays[1]
-        return float(tmp_string)
-
-def prepare_push_notification(notification, device_tokens):
-    device_token_lists = []
-    for item in device_tokens:
-        device_token_lists.append(item.device_token)
-
-    push_notification.execute(device_token_lists, notification)
