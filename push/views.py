@@ -175,16 +175,16 @@ def device_token_register(request, username):
         if json_data.has_key('uuid'):
             post_uuid = json_data['uuid']
 
-        device_token_model = DeviceTokenModel.objects.filter(device_token = post_device_token,
-                                                             username = username,
+        device_token_model = DeviceTokenModel.objects.filter(username = username,
                                                              uuid = post_uuid)
 
-        if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
+        if device_token_model.count() == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
             float_os_version = utils.convert_float_os_version(post_os_version)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
                                            device_token = post_device_token,
-                                           username = username)
+                                           username = username,
+                                           uuid = post_uuid)
             insert_data.save()
 
             response_data['result'] = 'success'
@@ -193,12 +193,16 @@ def device_token_register(request, username):
         else:
             float_os_version = utils.convert_float_os_version(post_os_version)
 
-            # Version down and Version up of iOS
-            if device_token_model[0].os_version != float_os_version:
-                device_token_model[0].os_version = float_os_version
-                device_token_model[0].save()
+            for model in device_token_model:
+                if model.os_version != float_os_version:
+                    model.os_version = float_os_version
+                if model.device_token != post_device_token:
+                    model.device_token = post_device_token
+                model.update_datetime = datetime.now()
+                model.save()
+
             response_data['result'] = 'success'
-            response_data['message'] = '"' + post_device_token + '" was registered'
+            response_data['message'] = '"' + post_device_token + '" is updated'
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:
