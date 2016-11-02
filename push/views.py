@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseForbidden
 from push.models import DeviceTokenModel, NotificationModel, DevelopFileModel, ProductFileModel
 from django.shortcuts import render, render_to_response, redirect
@@ -20,7 +21,17 @@ UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 
 @login_required(login_url = '/accounts/login/')
 def index(request):
-    device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
+    device_tokens_list = DeviceTokenModel.objects.filter(username = request.user.username)
+    paginator = Paginator(device_tokens_list, 20)
+
+    page = request.GET.get('page')
+    try:
+        device_tokens = paginator.page(page)
+    except PageNotAnInteger:
+        device_tokens = paginator.page(1)
+    except EmptyPage:
+        device_tokens = paginator.page(paginator.num_pages)
+
     return render(request, 'push/top.html', {'device_tokens': device_tokens})
 
 @login_required(login_url = '/accounts/login')
