@@ -51,6 +51,25 @@
                         </tr>
                     {% endfor %}
                 </table>
+
+                <div class="col-sm-12" align="center">
+                    <div class="pagination">
+                        <ul class="pager">
+                            {% if device_tokens.has_previous %}
+                                <li><a href="?page={{ device_tokens.previous_page_number }}">前の20件</a></li>&nbsp;
+                            {% else %}
+                                <li class="disabled"><a href="#">前の20件</a></li>&nbsp;
+                            {% endif %}
+                                <li>{{ device_tokens.number }} / {{ device_tokens.paginator.num_pages }}</li>
+                            {% if device_tokens.has_next %}
+                                &nbsp;<li><a href="?page={{ device_tokens.next_page_number }}">次の20件</a></li>
+                            {% else %}
+                                &nbsp;<li class="disabled"><a href="#">次の20件</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
             {% else %}
                 <div class="well">
                     <h1>データはありません</h1>
