@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse, HttpResponseForbidden
 from push.models import DeviceTokenModel, NotificationModel, DevelopFileModel, ProductFileModel
 from django.shortcuts import render, render_to_response, redirect
@@ -20,7 +21,17 @@ UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 
 @login_required(login_url = '/accounts/login/')
 def index(request):
-    device_tokens = DeviceTokenModel.objects.filter(username = request.user.username)
+    device_tokens_list = DeviceTokenModel.objects.filter(username = request.user.username)
+    paginator = Paginator(device_tokens_list, 20)
+
+    page = request.GET.get('page')
+    try:
+        device_tokens = paginator.page(page)
+    except PageNotAnInteger:
+        device_tokens = paginator.page(1)
+    except EmptyPage:
+        device_tokens = paginator.page(paginator.num_pages)
+
     return render(request, 'push/top.html', {'device_tokens': device_tokens})
 
 @login_required(login_url = '/accounts/login')
@@ -39,18 +50,27 @@ def download_device_token(request):
 
 @login_required(login_url = '/accounts/login/')
 def sender(request):
-    if len(DevelopFileModel.objects.filter(upload_username = request.user.username)) > 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+    if DevelopFileModel.objects.filter(upload_username = request.user.username).count() > 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() == 0:
         return render(request, 'push/sender.html', {'is_develop': True, 'is_product': False})
-    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) > 0:
+    elif DevelopFileModel.objects.filter(upload_username = request.user.username).count() == 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() > 0:
         return render(request, 'push/sender.html', {'is_develop': False, 'is_product': True})
-    elif len(DevelopFileModel.objects.filter(upload_username = request.user.username)) == 0 and len(ProductFileModel.objects.filter(upload_username = request.user.username)) == 0:
+    elif DevelopFileModel.objects.filter(upload_username = request.user.username).count() == 0 and ProductFileModel.objects.filter(upload_username = request.user.username).count() == 0:
         return render(request, 'push/sender.html', {'is_develop': False, 'is_product': False})
     else:
         return render(request, 'push/sender.html', {'is_develop': True, 'is_product': True})
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
-    notifications = NotificationModel.objects.filter(username = request.user.username)
+    notifications_list = NotificationModel.objects.filter(username = request.user.username)
+    paginator = Paginator(notifications_list, 20)
+
+    page = request.GET.get('page')
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
     return render(request, 'push/notification_list.html', {'notifications': notifications})
 
 @login_required(login_url = '/accounts/login')
@@ -175,16 +195,16 @@ def device_token_register(request, username):
         if json_data.has_key('uuid'):
             post_uuid = json_data['uuid']
 
-        device_token_model = DeviceTokenModel.objects.filter(device_token = post_device_token,
-                                                             username = username,
+        device_token_model = DeviceTokenModel.objects.filter(username = username,
                                                              uuid = post_uuid)
 
-        if len(device_token_model) == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
+        if device_token_model.count() == 0 and post_device_token != '' and post_os_version != '' and post_uuid != '':
             float_os_version = utils.convert_float_os_version(post_os_version)
 
             insert_data = DeviceTokenModel(os_version = float_os_version,
                                            device_token = post_device_token,
-                                           username = username)
+                                           username = username,
+                                           uuid = post_uuid)
             insert_data.save()
 
             response_data['result'] = 'success'
@@ -193,12 +213,16 @@ def device_token_register(request, username):
         else:
             float_os_version = utils.convert_float_os_version(post_os_version)
 
-            # Version down and Version up of iOS
-            if device_token_model[0].os_version != float_os_version:
-                device_token_model[0].os_version = float_os_version
-                device_token_model[0].save()
+            for model in device_token_model:
+                if model.os_version != float_os_version:
+                    model.os_version = float_os_version
+                if model.device_token != post_device_token:
+                    model.device_token = post_device_token
+                model.update_datetime = datetime.now()
+                model.save()
+
             response_data['result'] = 'success'
-            response_data['message'] = '"' + post_device_token + '" was registered'
+            response_data['message'] = '"' + post_device_token + '" is updated'
 
             return HttpResponse(json.dumps(response_data), content_type="application/json")
     else:

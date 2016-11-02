@@ -36,11 +36,13 @@
                         <th>OSバージョン</th>
                         <th>登録日時</th>
                         <th>更新日時</th>
+                        <th>削除</th>
                     </tr>
                     {% for device_token in device_tokens %}
                         <tr data-href="{% url 'push:detail_device_token' device_token_id=device_token.id %}">
                             <td>{{ device_token.os_version }}</td>
                             <td>{{ device_token.register_datetime }}</td>
+                            <td>{{ device_token.update_datetime }}</td>
                             <td>
                                 <a href="{% url 'push:delete_device_token' device_token_id=device_token.id %}">
                                     <button class="btn btn-danger btn-xs" onClick="return confirm('削除してもいいですか？')">削除</button>
@@ -49,6 +51,25 @@
                         </tr>
                     {% endfor %}
                 </table>
+
+                <div class="col-sm-12" align="center">
+                    <div class="pagination">
+                        <ul class="pager">
+                            {% if device_tokens.has_previous %}
+                                <li><a href="?page={{ device_tokens.previous_page_number }}">前の20件</a></li>&nbsp;
+                            {% else %}
+                                <li class="disabled"><a href="#">前の20件</a></li>&nbsp;
+                            {% endif %}
+                                <li>{{ device_tokens.number }} / {{ device_tokens.paginator.num_pages }}</li>
+                            {% if device_tokens.has_next %}
+                                &nbsp;<li><a href="?page={{ device_tokens.next_page_number }}">次の20件</a></li>
+                            {% else %}
+                                &nbsp;<li class="disabled"><a href="#">次の20件</a></li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+
             {% else %}
                 <div class="well">
                     <h1>データはありません</h1>
@@ -56,7 +77,8 @@
                     <p>また、UserAgentに <code>iOS/nnsnodnb-mBaaS-Service</code> を追加してください</p>
                     <p><pre>{
     "device_token": "5000f5e8c297f9c593b88bd881d53b4a95201e46cb28e4ffeda465d6f998cb58",
-    "os_version": "9.3"
+    "os_version": "9.3",
+    "uuid": "E2188DE1-365E-488F-87A5-33B2F62CE758"
 }</pre></p>
                 </div>
             {% endif %}
