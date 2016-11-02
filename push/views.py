@@ -61,7 +61,16 @@ def sender(request):
 
 @login_required(login_url = '/accounts/login/')
 def notification_list(request):
-    notifications = NotificationModel.objects.filter(username = request.user.username)
+    notifications_list = NotificationModel.objects.filter(username = request.user.username)
+    paginator = Paginator(notifications_list, 20)
+
+    page = request.GET.get('page')
+    try:
+        notifications = paginator.page(page)
+    except PageNotAnInteger:
+        notifications = paginator.page(1)
+    except EmptyPage:
+        notifications = paginator.page(paginator.num_pages)
     return render(request, 'push/notification_list.html', {'notifications': notifications})
 
 @login_required(login_url = '/accounts/login')
