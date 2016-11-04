@@ -99,7 +99,7 @@ def confirm(request):
         if login_user is not None:
             if login_user.is_active:
                 login(request, login_user)
-                return redirect('push:index')
+                return render(request, 'push/top.html', {"is_first": True})
             else:
                 return HttpResponse('Login Error', status = 401)
         else:

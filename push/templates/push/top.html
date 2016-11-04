@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block title %}デバイストークン一覧{% endblock title %}
 {% block content %}
+
+{% if is_first %}
+    <script type="text/javascript">
+        alert('https://github.com/nnsnodnb/mbaas-ios-sdk\nこちらにiOS SDKがございます。\nダウンロードしてから開発にお使いください');
+    </script>
+{% endif %}
+
 <header>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
