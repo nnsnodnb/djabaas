@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^(?P<username>\w+)/register$', views.device_token_register, name = 'device_token_register'),
     url(r'^delete/device_token/(?P<device_token_id>\d+)$', views.delete_device_token, name = 'delete_device_token'),
     url(r'^device_token/(?P<device_token_id>\d+)', views.detail_device_token, name = 'detail_device_token'),
+    url(r'^delete_develop_pem$', views.delete_develop_pem, name = 'delete_develop_pem'),
 ]
