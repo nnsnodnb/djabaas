@@ -123,12 +123,18 @@ def settings(request):
 
 @csrf_exempt
 @login_required(login_url = '/accounts/login/')
-def delete_develop_pem(request):
+def delete_pem(request):
     if request.method == 'POST':
-        develop_model = DevelopFileModel.objects.filter(upload_username = request.user.username)[0]
-        os.remove(UPLOAD_DIR + develop_model.development_file_name)
-        develop_model.delete()
-        return render(request, 'push/settings.html', {'result': 'develop_success'})
+        if request.POST['pem_type'] == 'develop':
+            develop_model = DevelopFileModel.objects.filter(upload_username = request.user.username)[0]
+            os.remove(UPLOAD_DIR + develop_model.development_file_name)
+            develop_model.delete()
+            return render(request, 'push/settings.html')
+        elif request.POST['pem_type'] == 'product':
+            product_model = ProductFileModel.objects.filter(upload_username = request.user.username)[0]
+            os.remove(UPLOAD_DIR + product_model.production_file_name)
+            product_model.delete()
+            return render(request, 'push/settings.html')
     else:
         result = request.GET['result']
         return render(request, 'push/settings.html', {'destory': result})
