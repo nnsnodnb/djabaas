@@ -22,6 +22,11 @@
         alert('Develop用pemファイルの削除に成功しました');
         location.href = "{% url 'push:settings' %}";
     </script>
+{% elif destory == 'product_success' %}
+    <script type="text/javascript">
+        alert('Production用pemファイルの削除に成功しました');
+        location.href = "{% url 'push:settings' %}";
+    </script>
 {% endif %}
 
 <header>
@@ -75,7 +80,7 @@
                         {% if is_develop %}
                             <hr>
                             <div align="right">
-                                <button class="btn btn-danger" id="destory_develop" data-url="{% url 'push:delete_develop_pem' %}">削除</button>
+                                <button class="btn btn-danger" id="destory_develop" data-url="{% url 'push:delete_pem' %}">削除</button>
                             </div>
                         {% endif %}
                     </div>
@@ -104,7 +109,7 @@
                         {% if is_product %}
                         <hr>
                         <div align="right">
-                            <a href="#"><button class="btn btn-danger" onClick="return confirm('本当に削除しますか？')">削除</button></a>
+                            <button class="btn btn-danger" id="destory_product" data-url="{% url 'push:delete_pem' %}">削除</button></a>
                         </div>
                         {% endif %}
                     </div>
