@@ -117,7 +117,9 @@ def settings(request):
 
         return render(request, 'push/settings.html', {'result': 'success'})
     else:
-        return render(request, 'push/settings.html')
+        is_develop = True if DevelopFileModel.objects.filter(upload_username = request.user.username).count() >= 1 else False
+        is_product = True if ProductFileModel.objects.filter(upload_username = request.user.username).count() >= 1 else False
+        return render(request, 'push/settings.html', {'is_develop': is_develop, 'is_product': is_product})
 
 @login_required(login_url = '/accounts/login/')
 def notification(request):
