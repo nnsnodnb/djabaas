@@ -60,3 +60,16 @@ $('tr[data-href]').addClass('clickable')
         window.location = $(e.target).closest('tr').data('href');
     };
 });
+
+$('#destory_develop').click(function() {
+    if (confirm('本当に削除しますか？')) {
+        var url = $(this).attr('data-url');
+        $.ajax({
+            url: url,
+            type: "POST",
+            success: function (result) {
+                location.href = url + "?result=develop_success";
+            }
+        });
+    }
+});

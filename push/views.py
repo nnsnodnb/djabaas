@@ -121,6 +121,18 @@ def settings(request):
         is_product = True if ProductFileModel.objects.filter(upload_username = request.user.username).count() >= 1 else False
         return render(request, 'push/settings.html', {'is_develop': is_develop, 'is_product': is_product})
 
+@csrf_exempt
+@login_required(login_url = '/accounts/login/')
+def delete_develop_pem(request):
+    if request.method == 'POST':
+        develop_model = DevelopFileModel.objects.filter(upload_username = request.user.username)[0]
+        os.remove(UPLOAD_DIR + develop_model.development_file_name)
+        develop_model.delete()
+        return render(request, 'push/settings.html', {'result': 'develop_success'})
+    else:
+        result = request.GET['result']
+        return render(request, 'push/settings.html', {'destory': result})
+
 @login_required(login_url = '/accounts/login/')
 def notification(request):
     if request.method == 'POST':
