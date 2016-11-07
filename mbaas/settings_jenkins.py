@@ -6,7 +6,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 NOSE_ARGS = [
     '--cover-erase',
+    '--with-xunit',
     '--with-coverage',
+    '--cover-xml',
     '--cover-html',
     '--cover-package=accounts,push',
 ]
