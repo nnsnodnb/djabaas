@@ -60,3 +60,31 @@ $('tr[data-href]').addClass('clickable')
         window.location = $(e.target).closest('tr').data('href');
     };
 });
+
+$('#destory_develop').click(function() {
+    if (confirm('本当に削除しますか？')) {
+        var url = $(this).attr('data-url');
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {'pem_type': 'develop'},
+            success: function (result) {
+                location.href = url + "?result=develop_success";
+            }
+        });
+    }
+});
+
+$('#destory_product').click(function() {
+    if (confirm('本当に削除しますか？')) {
+        var url = $(this).attr('data-url');
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: {'pem_type': 'product'},
+            success: function (result) {
+                location.href = url + "?result=product_success";
+            }
+        });
+    }
+})
