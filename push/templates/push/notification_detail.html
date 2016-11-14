@@ -35,7 +35,7 @@
                         <button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i> 戻る</button>
                     </a>
                 </p>
-                {% if result.is_sent %}
+                {% if result.is_sent == False %}
                     <legend>プッシュ通知詳細</legend>
                     <p>タイトル　　　　: {{ result.title }}</p>
                     <p>メッセージ　　　: {{ result.message }}</p>
@@ -46,11 +46,11 @@
                     <p>登録日時　　　　: {{ result.register_date }}</p>
                     <p>実行日時　　　　: {{ result.execute_datetime }}</p>
                 {% else %}
-                    {# {% url 'push:notification_modify' %} #}
-                    <form class="form-horizontal" action="" method="POST"  onSubmit="return verification()">
+                    <form class="form-horizontal" action="{% url 'push:notification_modify' %}" method="POST"  onSubmit="return verification()">
                         <fieldset>
                             <legend>プッシュ通知編集</legend>
                             {% csrf_token %}
+                            <input type="hidden" value="{{ result.id }}" name="notification_id">
                             <div class="form-group">
                                 <label for="input_title" class="col-lg-2 control-label">タイトル</label>
                                 <div class="col-lg-10">
