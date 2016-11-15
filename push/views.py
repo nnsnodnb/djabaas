@@ -14,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
+from enumerates import NotificationStatus
+from enum import Enum
 import json, urllib, ast, sys, os, threading, os.path, csv
 import utils
 

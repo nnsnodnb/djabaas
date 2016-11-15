@@ -5,6 +5,8 @@ from __future__ import unicode_literals
 from datetime import datetime
 from django.db import models
 from django.utils.timezone import now
+from enumerates import NotificationStatus
+from enum import Enum
 
 class DeviceTokenModel(models.Model):
     os_version = models.FloatField()
@@ -28,7 +30,7 @@ class NotificationModel(models.Model):
     username = models.CharField(max_length = 50)
     execute_datetime = models.CharField(max_length = 16, default = '{0:%Y/%m/%d %H:%M}'.format(datetime.now()))
     is_sent = models.BooleanField(default = False)
-    status = models.IntegerField(default = 0)
+    status = models.IntegerField(default = NotificationStatus.Stanby)
 
 class DevelopFileModel(models.Model):
     upload_username = models.CharField(max_length = 50, blank = True)
