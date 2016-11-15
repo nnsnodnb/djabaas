@@ -35,12 +35,14 @@
                         <th>タイトル</th>
                         <th>OSバージョン</th>
                         <th>登録日時</th>
+                        <th>状態</th>
                     </tr>
                     {% for notification in notifications %}
                         <tr data-href="{% url 'push:notification_detail' notification_id=notification.id %}">
                             <td>{{ notification.title }}</td>
                             <td>{{ notification.os_version }}</td>
                             <td>{{ notification.register_date }}</td>
+                            <td><button class="btn btn-success" data-id="{{ notification.id }}" id="notification_status_change">停止</button></td>
                         </tr>
                     {% endfor %}
                 </table>
