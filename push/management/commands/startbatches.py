@@ -15,7 +15,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         now = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
-        notifications = NotificationModel.objects.filter(execute_datetime = now, is_sent = False)
+        notifications = NotificationModel.objects.filter(execute_datetime = now,
+                                                         is_sent = False,
+                                                         status = 0)
 
         for notification in notifications:
             device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
