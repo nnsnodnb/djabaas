@@ -35,7 +35,7 @@
                         <button class="btn btn-warning"><i class="fa fa-undo" aria-hidden="true"></i> 戻る</button>
                     </a>
                 </p>
-                {% if result.is_sent == False %}
+                {% if result.is_sent %}
                     <legend>プッシュ通知詳細</legend>
                     <p>タイトル　　　　: {{ result.title }}</p>
                     <p>メッセージ　　　: {{ result.message }}</p>
