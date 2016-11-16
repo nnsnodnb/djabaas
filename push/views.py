@@ -236,6 +236,10 @@ def notification(request):
             t = threading.Thread(target = utils.prepare_push_notification, args = (notification, device_tokens))
             t.start();
 
+            notification.is_sent = True
+            notification.status = 1
+            notification.save()
+
         return redirect('push:notification_list')
     else:
         return HttpResponseForbidden()
