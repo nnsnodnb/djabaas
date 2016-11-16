@@ -110,7 +110,8 @@
                                     {% if is_develop and is_product == False %}
                                         <label><input type="checkbox" name="is_production" value="true" disabled="disabled">配布用</label>
                                     {% elif is_develop == False and is_product %}
-                                        <label><input type="checkbox" name="is_production" value="true" disabled="disabled" checked="checked">配布用</label>
+                                        <input type="hidden" name="is_production" value="true">
+                                        <label><input type="checkbox" disabled="disabled" checked="checked">配布用</label>
                                     {% elif is_develop and is_product %}
                                         <label><input type="checkbox" name="is_production" value="true">配布用</label>
                                     {% endif %}
