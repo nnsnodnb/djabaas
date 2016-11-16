@@ -87,4 +87,46 @@ $('#destory_product').click(function() {
             }
         });
     }
-})
+});
+
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+var csrftoken = getCookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    crossDomain: false,
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type)) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+$('.notification_status_change').click(function () {
+    var $button = $('#notification_status_change' + $(this).attr('data-id'));
+    $.ajax({
+        url: '/change_notification_status',
+        type: 'PUT',
+        data: {'notification_id': $button.attr('data-id'),
+               'status': $button.attr('data-status')},
+    }).done(function(data) {
+        location.href = '/notification_list';
+    });
+});
