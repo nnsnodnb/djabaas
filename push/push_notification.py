@@ -41,6 +41,4 @@ def execute(device_token_lists, notification):
 
     apns.gateway_server.send_notification_multiple(frame)
 
-    notification.is_sent = True
-    notification.status = 1
     notification.save()
