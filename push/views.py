@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, QueryDict
 from push.models import DeviceTokenModel, NotificationModel, DevelopFileModel, ProductFileModel
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
@@ -14,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
+from enumerates import NotificationStatus
+from enum import Enum
 import json, urllib, ast, sys, os, threading, os.path, csv
 import utils
 
@@ -234,6 +236,10 @@ def notification(request):
             t = threading.Thread(target = utils.prepare_push_notification, args = (notification, device_tokens))
             t.start();
 
+            notification.is_sent = True
+            notification.status = 1
+            notification.save()
+
         return redirect('push:notification_list')
     else:
         return HttpResponseForbidden()
@@ -297,3 +303,17 @@ def device_token_register(request, username):
     else:
         # return HttpResponseForbidden()
         return HttpResponse('Access Denied', status=403)
+
+@csrf_exempt
+@login_required(login_url = '/accounts/login')
+def change_notification_status(request):
+    if request.method == 'PUT':
+        put_dict = {key: value[0] if len(value) == 1 else value for key, value in QueryDict(request.body).lists()}
+        notification_id = put_dict['notification_id']
+        status = put_dict['status']
+        notification = NotificationModel.objects.filter(id = notification_id)[0]
+        notification.status = int(status)
+        notification.save()
+        return redirect('push:notification_list')
+    else:
+        return redirect('push:notification_list')
