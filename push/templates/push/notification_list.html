@@ -5,7 +5,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
-                <a href="{% url 'push:index' %}" class="navbar-brand">mBaaS Service</a>
+                <a href="{% url 'push:index' %}" class="navbar-brand">mBaaS Service <font color="#01A9DB" size="0.5em">1.2.2</font></a>
                 <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
@@ -35,12 +35,20 @@
                         <th>タイトル</th>
                         <th>OSバージョン</th>
                         <th>登録日時</th>
+                        <th>変更</th>
                     </tr>
                     {% for notification in notifications %}
                         <tr data-href="{% url 'push:notification_detail' notification_id=notification.id %}">
                             <td>{{ notification.title }}</td>
                             <td>{{ notification.os_version }}</td>
                             <td>{{ notification.register_date }}</td>
+                            {% if notification.status == 0 %}
+                                <td><button class="btn btn-warning notification_status_change" data-id="{{ notification.id }}" data-status="2" id="notification_status_change{{ notification.id }}">停止</button></td>
+                            {% elif notification.status == 1 %}
+                                <td><button class="btn btn-success" disabled="disabled">停止</button></td>
+                            {% elif notification.status == 2 %}
+                                <td><button class="btn btn-success notification_status_change" data-id="{{ notification.id }}" data-status="0" id="notification_status_change{{ notification.id }}">開始</button></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>

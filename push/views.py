@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, QueryDict
 from push.models import DeviceTokenModel, NotificationModel, DevelopFileModel, ProductFileModel
 from django.shortcuts import render, render_to_response, redirect
 from django.template import RequestContext
@@ -14,6 +14,8 @@ from django.views.decorators.csrf import csrf_exempt
 from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
+from enumerates import NotificationStatus
+from enum import Enum
 import json, urllib, ast, sys, os, threading, os.path, csv
 import utils
 
@@ -77,6 +79,55 @@ def notification_list(request):
 def notification_detail(request, notification_id):
     result = NotificationModel.objects.filter(id = notification_id)[0]
     return render(request, 'push/notification_detail.html', {'result': result})
+
+@login_required(login_url = '/accounts/login')
+def notification_modify(request):
+    if request.method == 'POST':
+        notification = NotificationModel.objects.filter(id = request.POST['notification_id'])[0]
+        if request.POST['title'] != '':
+            notification.title = urllib.unquote(request.POST['title'])
+        if request.POST['message'] != '':
+            notification.message = urllib.unquote(request.POST['message'])
+        if request.POST['os_version'] != '':
+            notification.os_version = urllib.unquote(request.POST['os_version'])
+        if request.POST['sound'] != '':
+            notification.sound = request.POST['sound']
+        if request.POST['badge'] != '':
+            notification.badge = request.POST['badge']
+        elif request.POST['badge'] == '':
+            notification.badge = 0
+        if request.POST['url'] != '':
+            notification.url = urllib.unquote(request.POST['url'])
+        if request.POST['datetime'] != '':
+            tmp_datetime = request.POST['datetime'].split(' ')
+            date = tmp_datetime[0]
+            hour = tmp_datetime[1].split(':')[0]
+            minute = tmp_datetime[1].split(':')[1]
+            is_fm = True if tmp_datetime[2] == u'午後' else False
+            if is_fm:
+                hour = str(int(hour) + 12)
+            notification.execute_datetime = date + ' ' + hour + ':' + minute
+        else:
+            notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
+        if request.POST.has_key('json'):
+            notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
+        if request.POST.has_key('content-available'):
+            notification.content_available = True
+        if request.POST.has_key('is_production'):
+            notification.is_production = True
+
+        notification.save()
+
+        if notification.execute_datetime == '{0:%Y/%m/%d %H:%M}'.format(datetime.now()) or notification.execute_datetime == '':
+            device_tokens = DeviceTokenModel.objects.filter(os_version__gte = notification.os_version,
+                                                            username = request.user.username)
+
+            t = threading.Thread(target = utils.prepare_push_notification, args = (notification, device_tokens))
+            t.start();
+
+        return redirect('push:notification_list')
+    else:
+        return redirect('push:notification_list')
 
 @login_required(login_url = '/accounts/login/')
 def settings(request):
@@ -185,6 +236,10 @@ def notification(request):
             t = threading.Thread(target = utils.prepare_push_notification, args = (notification, device_tokens))
             t.start();
 
+            notification.is_sent = True
+            notification.status = 1
+            notification.save()
+
         return redirect('push:notification_list')
     else:
         return HttpResponseForbidden()
@@ -248,3 +303,17 @@ def device_token_register(request, username):
     else:
         # return HttpResponseForbidden()
         return HttpResponse('Access Denied', status=403)
+
+@csrf_exempt
+@login_required(login_url = '/accounts/login')
+def change_notification_status(request):
+    if request.method == 'PUT':
+        put_dict = {key: value[0] if len(value) == 1 else value for key, value in QueryDict(request.body).lists()}
+        notification_id = put_dict['notification_id']
+        status = put_dict['status']
+        notification = NotificationModel.objects.filter(id = notification_id)[0]
+        notification.status = int(status)
+        notification.save()
+        return redirect('push:notification_list')
+    else:
+        return redirect('push:notification_list')
