@@ -30,7 +30,7 @@ class NotificationModel(models.Model):
     username = models.CharField(max_length = 50)
     execute_datetime = models.CharField(max_length = 16, default = '{0:%Y/%m/%d %H:%M}'.format(datetime.now()))
     is_sent = models.BooleanField(default = False)
-    status = models.IntegerField(default = NotificationStatus.Stanby)
+    status = models.IntegerField(default = 0)
 
 class DevelopFileModel(models.Model):
     upload_username = models.CharField(max_length = 50, blank = True)
