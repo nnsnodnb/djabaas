@@ -19,7 +19,7 @@ def execute(device_token_lists, notification):
     for token in device_token_lists:
         token_hex.append(token)
 
-    json_data = ''
+    json_data = {}
     if notification.json != '':
         json_data = json.loads(notification.json)
 

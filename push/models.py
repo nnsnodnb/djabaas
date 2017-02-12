@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from django.db import models
 from django.utils.timezone import now
-from enumerates import NotificationStatus
+from modules.enumerates import NotificationStatus
 from enum import Enum
 
 class DeviceTokenModel(models.Model):
