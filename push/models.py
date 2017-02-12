@@ -25,6 +25,7 @@ class NotificationModel(models.Model):
     url = models.CharField(max_length = 200, blank = True)
     json = models.CharField(max_length = 150, blank = True)
     content_available = models.BooleanField(default = False)
+    mutable_content = models.BooleanField(default = False)
     is_production = models.BooleanField(default = False)
     register_date = models.DateTimeField(default = datetime.now)
     username = models.CharField(max_length = 50)

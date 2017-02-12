@@ -26,6 +26,9 @@ def execute(device_token_lists, notification):
     if notification.content_available:
         json_data['content-avalilable'] = 1
 
+    if notification.mutable_content:
+        json_data['mutable-content'] = 1
+
     payload = Payload(alert = notification.message,
                       sound = notification.sound,
                       badge = notification.badge,

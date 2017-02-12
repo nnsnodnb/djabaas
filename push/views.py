@@ -223,6 +223,8 @@ def notification(request):
             notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
         if request.POST.has_key('content-available'):
             notification.content_available = True
+        if request.POST.has_key('mutable-content'):
+            notification.mutable_content = True
         if request.POST.has_key('is_production'):
             notification.is_production = True
         notification.username = request.user.username
