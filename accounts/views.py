@@ -9,7 +9,7 @@ from django.shortcuts import render, redirect
 from django.template.context_processors import csrf
 import urllib, random, string, os
 from accounts.models import UserActivateTokenModel
-import encryption, mail_client
+from accounts import encryption, mail_client
 
 def register(request):
     if request.method == 'POST':

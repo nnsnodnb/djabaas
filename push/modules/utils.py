@@ -1,7 +1,7 @@
 # coding=utf-8
 
 from push.models import DeviceTokenModel, NotificationModel
-import push_notification
+from push.modules import push_notification
 
 def convert_float_os_version(os_version):
     try:

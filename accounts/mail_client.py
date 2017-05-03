@@ -5,7 +5,8 @@ from accounts.models import UserActivateTokenModel
 
 import random, string, os
 from sendgrid.helpers.mail import *
-import encryption, sendgrid
+from accounts import encryption
+import sendgrid
 
 # Register send mail
 def prepare_mail_register(user, encrypt, token):

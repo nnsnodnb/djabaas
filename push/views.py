@@ -14,10 +14,10 @@ from django.views.decorators.csrf import csrf_exempt
 from ast import literal_eval
 from datetime import datetime
 from user_agents import parse
-from modules.enumerates import NotificationStatus
+from push.modules.enumerates import NotificationStatus
 from enum import Enum
 import json, urllib, ast, sys, os, threading, os.path, csv
-from modules import utils
+from push.modules import utils
 
 UPLOAD_DIR = os.path.dirname(os.path.abspath(__file__)) + '/files/'
 
