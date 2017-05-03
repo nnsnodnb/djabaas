@@ -109,11 +109,11 @@ def notification_modify(request):
             notification.execute_datetime = date + ' ' + hour + ':' + minute
         else:
             notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
-        if request.POST.has_key('json'):
+        if 'json' in request.POST:
             notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
-        if request.POST.has_key('content-available'):
+        if 'content-available' in request.POST:
             notification.content_available = True
-        if request.POST.has_key('is_production'):
+        if 'is_production' in request.POST:
             notification.is_production = True
 
         notification.save()
@@ -131,12 +131,12 @@ def notification_modify(request):
 
 @login_required(login_url = '/accounts/login/')
 def settings(request):
-    if request.method == 'POST' and (request.FILES.has_key('development') or request.FILES.has_key('production')):
-        if request.FILES.has_key('development'):
+    if request.method == 'POST' and ('development' in request.FILES or 'production' in request.FILES):
+        if 'development' in request.FILES:
             file = request.FILES['development']
             pem_file = DevelopFileModel(upload_username = request.user.username,
                                         development_file_name = str(request.user.username) + '/' + file.name)
-        elif request.FILES.has_key('production'):
+        elif 'production' in request.FILES:
             file = request.FILES['production']
             pem_file = ProductFileModel(upload_username = request.user.username,
                                         production_file_name = str(request.user.username) + '/' + file.name)
@@ -219,13 +219,13 @@ def notification(request):
             notification.execute_datetime = date + ' ' + hour + ':' + minute
         else:
             notification.execute_datetime = '{0:%Y/%m/%d %H:%M}'.format(datetime.now())
-        if request.POST.has_key('json'):
+        if 'json' in request.POST:
             notification.json = json.dumps(ast.literal_eval(request.POST['json'])).replace('\'', '\"')
-        if request.POST.has_key('content-available'):
+        if 'content-available' in request.POST:
             notification.content_available = True
-        if request.POST.has_key('mutable-content'):
+        if 'mutable-content' in request.POST:
             notification.mutable_content = True
-        if request.POST.has_key('is_production'):
+        if 'is_production' in request.POST:
             notification.is_production = True
         notification.username = request.user.username
 
@@ -263,13 +263,13 @@ def device_token_register(request, username):
         post_device_token, post_os_version, post_uuid = '', '', ''
         json_data = literal_eval(request.body)
 
-        if json_data.has_key('device_token'):
+        if 'device_token' in json_data:
             post_device_token = json_data['device_token']
 
-        if json_data.has_key('os_version'):
+        if 'os_version' in json_data:
             post_os_version = json_data['os_version']
 
-        if json_data.has_key('uuid'):
+        if 'uuid' in json_data:
             post_uuid = json_data['uuid']
 
         device_token_model = DeviceTokenModel.objects.filter(username = username,

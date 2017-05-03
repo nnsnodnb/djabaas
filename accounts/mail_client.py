@@ -15,16 +15,16 @@ def prepare_mail_register(user, encrypt, token):
     activate_user.save()
 
     url = 'https://apps.nnsnodnb.moe/accounts/confirm?token=' + encrypt + '&session_id=' + token
-    send_mail(u'新規登録ありがとうございます', user.username + u"""様\n\n
+    send_mail('新規登録ありがとうございます', user.username + """様\n\n
 この度は新規登録していただきありがとうございます！\n
 以下のURLよりユーザをアクティベートしてください。\n\n""" + url, user.email, 'register')
 
 # Forget send mail
 def prepare_mail_forget(user):
-    password = ''.join([random.choice(string.letters + string.digits) for i in xrange(10)])
+    password = ''.join([random.choice(string.ascii_letters + string.digits) for i in range(10)])
     user.set_password(password)
     user.save()
-    send_mail(u'パスワード再発行', user.username + u"""様\n\n
+    send_mail('パスワード再発行', user.username + """様\n\n
 パスワードを再発行いたしました。
 ログイン後はすぐにパスワードを変更してください。\n\n
 パスワード：""" + password, user.email, 'info')
