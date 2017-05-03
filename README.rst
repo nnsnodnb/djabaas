@@ -19,7 +19,6 @@ Prepare
     $ pip install -r requirements.txt
     $ cp mbaas/settings.py.sample mbaas/settings.py
     # Edit it if necessary (Email infomation etc.)
-    $ python manage.py makemigrations
     $ python manage.py migrate
     $ python manage.py createsuperuer
 
