@@ -148,3 +148,4 @@ media
 push/files/*
 !push/files/__init__.py
 cover
+.idea/
