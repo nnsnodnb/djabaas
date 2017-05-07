@@ -27,6 +27,8 @@ In addition, add the following to the cron.
 .. code:: crontab
 
     * * * * * python /path/to/manage.py startbatches
+
+.. code:: crontab
     */10 * * * * cd /path/to/django-mbaas && python manage.py dis_push
 
 If you use this product on debug mode.
