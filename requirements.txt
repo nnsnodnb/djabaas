@@ -1,4 +1,4 @@
-apns==2.0.1
+apns3==1.0.0
 appdirs==1.4.3
 coverage==4.2
 Django==1.9.1
