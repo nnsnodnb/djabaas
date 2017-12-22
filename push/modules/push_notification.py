@@ -1,7 +1,7 @@
 # coding=utf-8
 
 import time, os, json
-from apns import APNs, Frame, Payload
+from apns3 import APNs, Frame, Payload
 from push.models import DevelopFileModel, ProductFileModel
 from django.conf import settings
 
